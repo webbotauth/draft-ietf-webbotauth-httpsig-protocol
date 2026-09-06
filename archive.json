@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-01T04:02:36.906273+00:00",
+  "timestamp": "2026-09-06T03:25:53.874039+00:00",
   "repo": "thibmeu/http-message-signatures-directory",
   "labels": [
     {
@@ -202,7 +202,7 @@
       ],
       "body": "This relates to https://github.com/cloudflareresearch/web-bot-auth/issues/4\n\nIt should be fine to limit these vectors to Ed25519 initially.",
       "createdAt": "2025-04-25T07:36:43Z",
-      "updatedAt": "2026-08-31T14:15:01Z",
+      "updatedAt": "2026-09-05T03:47:21Z",
       "closedAt": null,
       "comments": [
         {
@@ -218,6 +218,13 @@
           "body": "Here's the set: https://github.com/ParallaxGrain/webbotauth-negative-vectors\n\n17 vectors, one fault per vector, on the B.1.4 key from RFC 9421 since the draft already uses it. Each one gives the request, the outcome it should get from Appendix C.1, and a suggested reason underneath. If the reason vocabulary isn't useful to you, check the outcome and ignore the rest.\n\nCOVERAGE.md goes through all 37 failures my verifier can report and says what became of each: 17 are vectors, 20 are not. The count quoted earlier in this thread is out of date. Building the vectors settled two classifications against the text and turned up one condition that had no name yet, so it is 37 now, split 19/18.\n\nOne thing I could not write a vector for. Section 5.2 makes tag=\"web-bot-auth\" a MUST for signers, RFC 9421 3.2.1 says verification MUST fail when an application's own requirements are not met, and 5.4 says the Origin MAY discard a foreign tag instead. Those are two different answers to the same request, and one of them is not an outcome Appendix C.1 defines, so I had nothing to put in the expected field. Written up in COVERAGE.md.\n\n@AVAVERIFY I did both the things you suggested. Outcome and reason are checked against each other twice, and the generator won't write a vector where the two disagree. Conclude vs disclose has its own section, with your comment linked.\n\nIssues and PRs welcome, especially if a vector expects the wrong reason.",
           "createdAt": "2026-08-31T14:15:01Z",
           "updatedAt": "2026-08-31T14:15:01Z"
+        },
+        {
+          "author": "AVAVERIFY",
+          "authorAssociation": "NONE",
+          "body": "Results from running the 17 against our production verifier, as promised. The short version: 15 of 17 outcomes agree, and the two that do not are one sentence in Appendix C.1 rather than a defect on either side. The longer version has a part I owe you plainly.\n\nThree of your vectors found real bugs in our verifier, and two of them were verify-through holes. NV-19: we never checked for repeated component identifiers, built a signature base with @authority twice, and verified a signature over it, which RFC 9421 Section 2.5 forbids outright. NV-13: given several Signature-Agent members and none label-matched, we attributed by header order, which means a request could name a reputable origin first and its own second and we would have attributed to the first, exactly the Section 5.2.2 MUST NOT. NV-17: a directory-type member carrying a path, which Section 5.5 says to ignore; we took the origin, discarded the path, and reported our strongest binding claim for it. Before your set we agreed on 13 of 17; all three are fixed with regression tests and deployed, and the fix for NV-17 is the same one your README discloses for your own verifier. Your set did in an afternoon what our own suite had not done in two months, and I would say that on the record even if it were more comfortable not to.\n\nThe two remaining disagreements, NV-12 and post-fix NV-17, are the same question, and it is the one your Open section already names. You read C.1's \"unverified\" as \"discovery could not run\"; we read it as \"a check we ran could not complete.\" A signed request with no Signature-Agent, or with a sole member the text says to ignore, is definitively non-conforming to a MUST, and we know it without fetching anything, so we say invalid. You say unverified because nothing was checked. Notably you classify those two cells differently from each other on your side and call both defensible, so this is one unresolved word producing three different splits across two implementations. That is a text problem for the group to settle, and the vectors are what surfaced it.\n\nOn granularity, a concession: eleven of your seventeen conditions arrive at a merchant from our verifier as a single name, malformed_signature_header, and in three of those the header is not malformed at all. Your fix texts for NV-07 and NV-05 are correct about the operational cost: a canonicalization disagreement and a forgery both reach us as one Ed25519 verify returning false, and a clock-ahead signer reading our reason name is told the opposite of what is wrong. That is the argument for your set, landing in exactly the layer it is trying to name.\n\nOn your un-vectorable tag contradiction, a third datapoint rather than a resolution: we take the RFC 9421 Section 3.2.1 branch. A signature tagged with another protocol is reported invalid, never treated as unsigned. Two honest caveats. The check sits in our step 1, before any directory I/O, so we chose that branch for pipeline reasons, cheap checks first, and did not know we were picking a side. And we report it under the wrong name, since the header is well formed and merely declares a different protocol. There is also a third position the draft does not draw: a gateway that speaks several agent protocols reads the tag to decide which verifier to run, before any of them concludes anything, so for a gateway an unrecognised tag is routing, not an outcome. The contradiction may be sharper for a single-protocol origin.\n\nCorrecting something I said on Aug 26. Our verifier does attach a conclusive flag to every result it emits, and the three could-not-check reasons are the only ones that ever carry false. But I said our schema enforces the pairing, and it does not. The field is optional on the type, independent of the reason, and coherence is maintained by hand at seven call sites and by review. Nothing would catch a new could-not-check reason that silently inherited the default. That is a large part of why I want the pairing in the vector schema: yours is enforced by generate.mjs and verify.mjs, and ours is a convention.\n\nOn vendoring: the three regressions live in our suite now, and I will pin your JSON the moment a set lands in the draft, the way we did with E.2.3. Until then it is your file, and it has already earned its keep.",
+          "createdAt": "2026-09-05T03:47:21Z",
+          "updatedAt": "2026-09-05T03:47:21Z"
         }
       ]
     },
@@ -6483,6 +6490,52 @@
         }
       ],
       "reviews": []
+    },
+    {
+      "number": 132,
+      "id": "PR_kwDOOXJyWM8AAAABCDvk7w",
+      "title": "[protocol] use direct JWKS discovery",
+      "url": "https://github.com/thibmeu/http-message-signatures-directory/pull/132",
+      "state": "MERGED",
+      "author": "thibmeu",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "thibmeu"
+      ],
+      "labels": [
+        "protocol"
+      ],
+      "body": "Relates to #109 opened by @martinthomson\r\n\r\nThis moves `Signature-Agent` to only accept a direct JWK Set URI\r\n\r\n```\r\nSignature-Agent: agent1=\"https://alice.example.com/.well-known/http-message-signatures-directory\"\r\nSignature-Agent: agent2=\"https://bob.example.com/.well-known/keys.json\"\r\n```\r\n\r\nThis is a breaking change. It also removes `directory` and `cimd`, which could be added in a future document.\r\n\r\nThat change seems to have received positive feedback on the list. We should restart a thread though as that's breaking to inform folks.\r\n\r\n@sandormajor for review",
+      "createdAt": "2026-09-03T12:56:36Z",
+      "updatedAt": "2026-09-04T09:11:01Z",
+      "baseRepository": "thibmeu/http-message-signatures-directory",
+      "baseRefName": "main",
+      "baseRefOid": "164910d629a62544c1c6e7c41367c6ca69563b58",
+      "headRepository": "thibmeu/http-message-signatures-directory",
+      "headRefName": "issue-109-single-jwks",
+      "headRefOid": "88b223e5ef8d7ea73a298dcfef430ce00fba76ab",
+      "closedAt": "2026-09-04T09:10:56Z",
+      "mergedAt": "2026-09-04T09:10:56Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "3bf2270396720b7c23a38aaac47a2d5bd90397fd"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABMC7EJw",
+          "commit": {
+            "abbreviatedOid": "88b223e"
+          },
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-09-03T14:44:09Z",
+          "updatedAt": "2026-09-03T14:44:09Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
