@@ -1,4 +1,3 @@
 # Automatically generated CODEOWNERS
 # Regenerate with `make update-codeowners`
 draft-ietf-webbotauth-httpsig-protocol.md ot-ietf@thibault.uk ietf@sandormajor.com
-draft-meunier-webbotauth-registry.md maxime.guerreiro@gmail.com ulaskira@amazon.com ot-ietf@thibault.uk

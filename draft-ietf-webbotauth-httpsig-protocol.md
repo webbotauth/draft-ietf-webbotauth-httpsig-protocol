@@ -18,8 +18,8 @@ venue:
   type: "Working Group"
   mail: "web-bot-auth@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/web-bot-auth/"
-  github: "thibmeu/http-message-signatures-directory"
-  latest: "https://thibmeu.github.io/http-message-signatures-directory/draft-ietf-webbotauth-httpsig-protocol.html"
+  github: "webbotauth/draft-ietf-webbotauth-protocol"
+  latest: "https://webbotauth.github.io/draft-ietf-webbotauth-protocol/draft-ietf-webbotauth-httpsig-protocol.html"
 
 author:
  -
@@ -1194,7 +1194,7 @@ Deployments should avoid:
 
 Delegation and chaining are out of scope for this document and are expected
 to be specified separately. Input is welcome on the associated
-[GitHub issue](https://github.com/thibmeu/http-message-signatures-directory/issues/27).
+[GitHub issue](https://github.com/webbotauth/draft-ietf-webbotauth-protocol/issues/27).
 
 ## Multiple Signatures with a Remote Browser {#example-multiple-signatures}
 
