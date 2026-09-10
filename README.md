@@ -4,16 +4,16 @@
 
 This is the working area for the IETF [WEBBOTAUTH Working Group](https://datatracker.ietf.org/group/webbotauth/documents/) Internet-Draft, "HTTP Message Signatures for automated traffic".
 
-* [Editor's Copy](https://webbotauth.github.io/draft-ietf-webbotauth-protocol/#go.draft-ietf-webbotauth-httpsig-protocol.html)
+* [Editor's Copy](https://webbotauth.github.io/draft-ietf-webbotauth-httpsig-protocol/#go.draft-ietf-webbotauth-httpsig-protocol.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-webbotauth-httpsig-protocol)
 * [Working Group Draft](https://datatracker.ietf.org/doc/html/draft-ietf-webbotauth-httpsig-protocol)
-* [Compare Editor's Copy to Working Group Draft](https://webbotauth.github.io/draft-ietf-webbotauth-protocol/#go.draft-ietf-webbotauth-httpsig-protocol.diff)
+* [Compare Editor's Copy to Working Group Draft](https://webbotauth.github.io/draft-ietf-webbotauth-httpsig-protocol/#go.draft-ietf-webbotauth-httpsig-protocol.diff)
 
 
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/webbotauth/draft-ietf-webbotauth-protocol/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/blob/main/CONTRIBUTING.md).
 
 The contributing file also has tips on how to make contributions, if you
 don't already know how to do that.

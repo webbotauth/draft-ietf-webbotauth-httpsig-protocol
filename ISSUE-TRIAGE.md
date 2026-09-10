@@ -30,4 +30,4 @@ Reviewed 2026-09-10: all 21 open issues and their available comments in `thibmeu
 | [#128: 5.2.1 label-keying MUST vs the Appendix E vectors, and whether 5.2.2 already carries the property](https://github.com/thibmeu/http-message-signatures-directory/issues/128) | Keep with protocol | Signature label matching and protocol test vectors. |
 | [#133: §5.2: "expiry" is separated from its antecedent and reads as key expiry](https://github.com/thibmeu/http-message-signatures-directory/issues/133) | Keep with protocol | Signature lifetime wording in signing requirements. |
 
-The proposed protocol destination, `webbotauth/draft-ietf-webbotauth-protocol`, could not be resolved by GitHub during this review. Repository links are prepared for the planned move. The registry destination is confirmed as `thibmeu/draft-meunier-webbotauth-registry`.
+The protocol destination is `webbotauth/draft-ietf-webbotauth-httpsig-protocol`. The registry destination is `thibmeu/draft-meunier-webbotauth-registry`.
