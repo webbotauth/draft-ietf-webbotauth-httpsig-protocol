@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-06T03:25:53.874039+00:00",
+  "timestamp": "2026-09-10T03:33:17.594557+00:00",
   "repo": "thibmeu/http-message-signatures-directory",
   "labels": [
     {
@@ -2374,6 +2374,22 @@
       "createdAt": "2026-08-19T05:53:45Z",
       "updatedAt": "2026-08-19T15:54:54Z",
       "closedAt": "2026-08-19T15:54:54Z",
+      "comments": []
+    },
+    {
+      "number": 133,
+      "id": "I_kwDOOXJyWM8AAAABQfdNXQ",
+      "title": "\u00a75.2: \"expiry\" is separated from its antecedent and reads as key expiry",
+      "url": "https://github.com/thibmeu/http-message-signatures-directory/issues/133",
+      "state": "OPEN",
+      "author": "pierluc-codes",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Against `draft-ietf-webbotauth-httpsig-protocol-00`, \u00a75.2.\n\n\u00a75.2 introduces `expires` as a required `@signature-params` entry, then the\nlist continues with `keyid` and `tag`, and three sentences on other topics\nfollow before the recommendation:\n\n> The signing key is available to the agent at request time. Algorithms should\n> be registered with IANA as part of HTTP Message Signatures Algorithm\n> registry.\n>\n> The creation of the signature is defined in Section 3.1 of\n> [HTTP-MESSAGE-SIGNATURES].\n>\n> It is RECOMMENDED that expiry be no more than 24 hours.\n\nBy that point the nearest concrete noun is \"the signing key\", and the sentence\nsays \"expiry\" rather than naming the parameter. I read it as a bound on key\nlifetime.\n\nThe document uses that word family for both clocks, which is what makes the\nbare noun ambiguous rather than merely loose. \u00a75.5.2 describes a key's own\nexpiry in the same terms: \"Continue to include the old key until its\nexpiration date\", and \"Remove expired keys from the directory\". The directory\nexample in \u00a75.5.1 gives such a key a 30-day life (`nbf` 2024-04-11, `exp`\n2024-05-11). A reader who attaches the 24-hour figure to keys therefore lands\nsomewhere the document contradicts by two orders of magnitude, and has no local\ncue that they have done so.\n\nIn fairness, the paragraph immediately after does resolve it: \"A signature\ncovering @authority alone verifies against any method, path, or body sent to\nthat authority until it expires [...] expires bounds how long that lasts.\"\nSo a reader going straight through recovers one paragraph later. The cost is\nthat they recover by backtracking, having already formed the wrong reading.\nNaming the parameter avoids that for one word.\n\nSuggested fix, either:\n\n- name the parameter: \"It is RECOMMENDED that a signature's `expires` be no\n  more than 24 hours after its `created`.\"\n- or move the sentence up so it attaches directly to the `expires` entry in the\n  `@signature-params` list, where its antecedent is unambiguous.\n",
+      "createdAt": "2026-09-09T15:51:25Z",
+      "updatedAt": "2026-09-09T15:51:25Z",
+      "closedAt": null,
       "comments": []
     }
   ],
