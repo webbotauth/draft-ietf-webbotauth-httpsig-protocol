@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-13T03:42:56.603957+00:00",
+  "timestamp": "2026-09-20T03:53:35.119842+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2433,6 +2433,22 @@
       "body": "I'm thinking how to handle ID migration. E.g. you use the header `Signature-Agent: x=\"https://bot.example/.well-known/...\"` but then the keys move for some reason to `something.example/jwks.json`. If you simply update the header to the new address then all the allowlists/denylists/reputation accrued on the web becomes invalid.\n\nSome components of a solution could be\n* Returning a 302 redirect for a period of time when requesting the old json (related: https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/119)\n* Linking the old json from the new one so that verifiers know that it is a successor of the old one\n* Co-signing with both keys for a period of time\n\nIt becomes more tricky when the migration is not 1:1 but bots split or merge.\n\nA related broader issue here is that the protocol could signify many things (e.g. I'm moving the bot's identity from a.com to b.com) but there is no way to test what the ecosystem does with the signal. During my experiments with WBA it was very hard to even know how websites react to these headers (is the new header going to break a bunch of sites? do they recognize the header? do they parse it correctly? did they adopt https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/71? if parsing fails, do they fall back to IP verification? do they treat IP and WBA the same way?)\nThis makes any type of migration very costly.\nMaybe something like the [web platform tests](https://web-platform-tests.org/) could help here, but things like \"does the reputation carry over\" will be very hard to test because providers might not want to share reputation signals back to the client.",
       "createdAt": "2026-09-11T15:37:42Z",
       "updatedAt": "2026-09-11T15:37:42Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 135,
+      "id": "I_kwDOOXJyWM8AAAABSILElA",
+      "title": "E.2.1: signature label \"sig2\" does not match Signature-Agent member \"agent2\"",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/135",
+      "state": "OPEN",
+      "author": "FearmessOp",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In Appendix E.2.1 of draft-ietf-webbotauth-httpsig-protocol-00, `Signature-Input` and `Signature` use the label `sig2`, but the `Signature-Agent` field uses the member key `agent2`, and the covered component is `\"signature-agent\";key=\"agent2\"`.\n\nSection 5.2.1 requires the covered `Signature-Agent` member to be keyed by the signature label, so the example does not follow its own rule.\n\nThe signature itself checks out. I re-derived the 375-byte signature base and verified the 64-byte Ed25519 signature against the RFC 9421 B.1.4 public key; both match. This is a naming inconsistency in the example, not a bad vector.\n\nTwo ways to fix it:\n\n- Rename the label in `Signature-Input` and `Signature` from `sig2` to `agent2`. The label is not part of the signature base, so the published base and signature bytes stay valid. This is the smaller change.\n- Or, if `sig2` is the intended label, rename the `Signature-Agent` member and the `key` parameter to `sig2`, then regenerate the base and signature.\n\nWhich one is intended?\n\nUnrelated nit: the draft text still lists https://github.com/thibmeu/http-message-signatures-directory as the source repository; that URL now redirects here.\n\nI ran into this while implementing the profile independently in Node.js (https://www.npmjs.com/package/@agentsig/core), and I'm using the vector as a negative test case for label binding in the meantime.",
+      "createdAt": "2026-09-19T15:55:39Z",
+      "updatedAt": "2026-09-19T15:55:39Z",
       "closedAt": null,
       "comments": []
     }
