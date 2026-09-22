@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-20T03:53:35.119842+00:00",
+  "timestamp": "2026-09-22T03:47:44.584519+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2384,9 +2384,17 @@
       "labels": [],
       "body": "Implementing -02 in our merchant-side verifier surfaced a conflict Joshua\nAshcroft's implementer's report also touches (his finding 1): 5.2.1\nrequires the Signature-Agent member keyed to the signature label to be\ncovered, but E.1.1 and E.2.1 label the signature sig2 while keying the\nmember agent2. A strict 5.2.1 reading rejects the document's own vectors.\n\nTwo possible fixes, and they differ in reach. Re-keying the vector members\nto their signature labels closes the fixture inconsistency. But it may be\nworth asking whether 5.2.1's label-matching requirement is itself stronger\nthan needed: 5.2.2 already requires resolving the member the signature\nactually covers, which is the security-relevant property, and matching the\nlabel on top of that adds bookkeeping without adding security. Our verifier\nimplements the 5.2.2 rule (attribute to the covered member, whatever its\nkey), passes both the E.2.1 request vector and the E.2.3 directory vector\nthat way, and we have documented it as a retained deviation from a strict\n5.2.1 reading.\n\nHappy to PR either direction once the intended rule is settled.",
       "createdAt": "2026-08-19T04:44:03Z",
-      "updatedAt": "2026-08-19T04:44:03Z",
+      "updatedAt": "2026-09-20T18:11:46Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "FearmessOp",
+          "authorAssociation": "NONE",
+          "body": "Data point from another independent implementation (Node.js, @agentsig/core):\nwe currently apply 5.2.1 strictly, so E.2.1 fails with a label-mismatch error\nand we carry it as a negative test. I agree the covered member key is what the\nsignature actually binds and that label matching on top of it doesn't add a\nsecurity property; if the WG settles on the 5.2.2-only reading we'll switch,\nand it would let the published vectors stand unchanged. Two implementations\ndiverging on this seems like a good reason to name the intended rule in -01.",
+          "createdAt": "2026-09-20T18:11:46Z",
+          "updatedAt": "2026-09-20T18:11:46Z"
+        }
+      ]
     },
     {
       "number": 129,
@@ -2448,9 +2456,17 @@
       "labels": [],
       "body": "In Appendix E.2.1 of draft-ietf-webbotauth-httpsig-protocol-00, `Signature-Input` and `Signature` use the label `sig2`, but the `Signature-Agent` field uses the member key `agent2`, and the covered component is `\"signature-agent\";key=\"agent2\"`.\n\nSection 5.2.1 requires the covered `Signature-Agent` member to be keyed by the signature label, so the example does not follow its own rule.\n\nThe signature itself checks out. I re-derived the 375-byte signature base and verified the 64-byte Ed25519 signature against the RFC 9421 B.1.4 public key; both match. This is a naming inconsistency in the example, not a bad vector.\n\nTwo ways to fix it:\n\n- Rename the label in `Signature-Input` and `Signature` from `sig2` to `agent2`. The label is not part of the signature base, so the published base and signature bytes stay valid. This is the smaller change.\n- Or, if `sig2` is the intended label, rename the `Signature-Agent` member and the `key` parameter to `sig2`, then regenerate the base and signature.\n\nWhich one is intended?\n\nUnrelated nit: the draft text still lists https://github.com/thibmeu/http-message-signatures-directory as the source repository; that URL now redirects here.\n\nI ran into this while implementing the profile independently in Node.js (https://www.npmjs.com/package/@agentsig/core), and I'm using the vector as a negative test case for label binding in the meantime.",
       "createdAt": "2026-09-19T15:55:39Z",
-      "updatedAt": "2026-09-19T15:55:39Z",
+      "updatedAt": "2026-09-20T18:11:15Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "FearmessOp",
+          "authorAssociation": "NONE",
+          "body": "Cross-reference: #128 raises the same label/member inconsistency and also\nquestions whether the 5.2.1 label-matching rule is needed at all, given 5.2.2\nalready binds the verifier to the covered member. This issue is the narrower,\nbyte-level report for E.2.1 with a minimal fix; happy to close it into #128\nif the editors prefer to track it there.",
+          "createdAt": "2026-09-20T18:11:15Z",
+          "updatedAt": "2026-09-20T18:11:15Z"
+        }
+      ]
     }
   ],
   "pulls": [
