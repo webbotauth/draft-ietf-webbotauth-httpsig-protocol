@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-22T03:47:44.584519+00:00",
+  "timestamp": "2026-09-27T04:11:24.354025+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2384,7 +2384,7 @@
       "labels": [],
       "body": "Implementing -02 in our merchant-side verifier surfaced a conflict Joshua\nAshcroft's implementer's report also touches (his finding 1): 5.2.1\nrequires the Signature-Agent member keyed to the signature label to be\ncovered, but E.1.1 and E.2.1 label the signature sig2 while keying the\nmember agent2. A strict 5.2.1 reading rejects the document's own vectors.\n\nTwo possible fixes, and they differ in reach. Re-keying the vector members\nto their signature labels closes the fixture inconsistency. But it may be\nworth asking whether 5.2.1's label-matching requirement is itself stronger\nthan needed: 5.2.2 already requires resolving the member the signature\nactually covers, which is the security-relevant property, and matching the\nlabel on top of that adds bookkeeping without adding security. Our verifier\nimplements the 5.2.2 rule (attribute to the covered member, whatever its\nkey), passes both the E.2.1 request vector and the E.2.3 directory vector\nthat way, and we have documented it as a retained deviation from a strict\n5.2.1 reading.\n\nHappy to PR either direction once the intended rule is settled.",
       "createdAt": "2026-08-19T04:44:03Z",
-      "updatedAt": "2026-09-20T18:11:46Z",
+      "updatedAt": "2026-09-24T14:03:16Z",
       "closedAt": null,
       "comments": [
         {
@@ -2393,6 +2393,13 @@
           "body": "Data point from another independent implementation (Node.js, @agentsig/core):\nwe currently apply 5.2.1 strictly, so E.2.1 fails with a label-mismatch error\nand we carry it as a negative test. I agree the covered member key is what the\nsignature actually binds and that label matching on top of it doesn't add a\nsecurity property; if the WG settles on the 5.2.2-only reading we'll switch,\nand it would let the published vectors stand unchanged. Two implementations\ndiverging on this seems like a good reason to name the intended rule in -01.",
           "createdAt": "2026-09-20T18:11:46Z",
           "updatedAt": "2026-09-20T18:11:46Z"
+        },
+        {
+          "author": "AVAVERIFY",
+          "authorAssociation": "NONE",
+          "body": "One correction to my own text above, since #135 has now reported the same E.2.1 finding and it would be easy to quote the wrong sentence. I wrote that our verifier \"passes both the E.2.1 request vector and the E.2.3 directory vector that way.\" E.2.3 is the signed directory response: a response signature under the label `binding` covering `@authority` and `content-digest`, with no `Signature-Agent` member, so the 5.2.1 keying rule does not apply to it at all. We verify E.2.3, but it says nothing about this question. Only E.2.1 does.\n\nOn the substance, #135 adds the option I should have named: renaming the label `sig2` to `agent2` in `Signature-Input` and `Signature` leaves the published base and signature bytes valid, because the label is not in the signature base. That is the smallest change to the vectors. Paired with stating the 5.2.2 rule (attribute to the member the signature actually covers) as the intended one in -01, both implementations here would converge without regenerating anything. The PR offer stands for either direction.",
+          "createdAt": "2026-09-24T14:03:16Z",
+          "updatedAt": "2026-09-24T14:03:16Z"
         }
       ]
     },
@@ -2440,9 +2447,17 @@
       "labels": [],
       "body": "I'm thinking how to handle ID migration. E.g. you use the header `Signature-Agent: x=\"https://bot.example/.well-known/...\"` but then the keys move for some reason to `something.example/jwks.json`. If you simply update the header to the new address then all the allowlists/denylists/reputation accrued on the web becomes invalid.\n\nSome components of a solution could be\n* Returning a 302 redirect for a period of time when requesting the old json (related: https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/119)\n* Linking the old json from the new one so that verifiers know that it is a successor of the old one\n* Co-signing with both keys for a period of time\n\nIt becomes more tricky when the migration is not 1:1 but bots split or merge.\n\nA related broader issue here is that the protocol could signify many things (e.g. I'm moving the bot's identity from a.com to b.com) but there is no way to test what the ecosystem does with the signal. During my experiments with WBA it was very hard to even know how websites react to these headers (is the new header going to break a bunch of sites? do they recognize the header? do they parse it correctly? did they adopt https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/71? if parsing fails, do they fall back to IP verification? do they treat IP and WBA the same way?)\nThis makes any type of migration very costly.\nMaybe something like the [web platform tests](https://web-platform-tests.org/) could help here, but things like \"does the reputation carry over\" will be very hard to test because providers might not want to share reputation signals back to the client.",
       "createdAt": "2026-09-11T15:37:42Z",
-      "updatedAt": "2026-09-11T15:37:42Z",
+      "updatedAt": "2026-09-24T14:26:56Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "AVAVERIFY",
+          "authorAssociation": "NONE",
+          "body": "An implementer's report against the second half of this issue, the part about not being able to tell what verifiers do with the signal, because we can measure a piece of it.\n\nOn 2026-09-20 we probed 24 candidate hosts for `/.well-known/http-message-signatures-directory` and found five live directories (bounded probe, not a census: 18 returned 404, one returned 401, three failed DNS). Four serve a JWK Set. One, `www.shopify.com`, serves a bare JWK object with no `keys` member. Two shipped verifiers then give opposite answers on that same directory: the public checker at webbotauth.net rejects it (\"Body does not contain a keys array\") and will not grade it, while ours accepts it and pins Shopify's exact body in a frozen test. Neither is wrong by the text. Section 5.5.1 says the three types \"resolve to a JSON Web Key Set\" with no 2119 keyword, and the verifier duty is a SHOULD scoped to entries. So the answer to \"do they parse it correctly?\" is that the question has no single answer today, and the draft is why. A separate fault on the same host, not to be blurred with the first: the apex `shopify.com` returns a 301 to `www`, and Section 5.5's \"MUST be served with a 200\" is a real MUST, so a verifier resolving `Signature-Agent: \"https://shopify.com\"` conformantly gets a discovery failure rather than a key.\n\nTwo observations from our own code that bear on the migration question. First, we already branch on draft era on the wire in two places: whether `Signature-Agent` is the legacy bare string or the dictionary form, and whether member resolution is strictly keyed to the signature label or lenient with a fallback. That is a live example of how expensive a signal change already is for a verifier, before any identity moves. Second, each of the three migration components you list (a 302 for a period, the new directory linking the old, co-signing) only helps a verifier that keeps history. Ours keeps an append-only log of (key, domain) observations for exactly that reason: continuity or succession can be computed over the log later, rather than needing a rebuild when the rule arrives. A verifier without such a log sees a migrated identity as a new name, whatever the old directory says about it.\n\nOne thing we do not do, since a report that only lists what we got right is not a report: we do not gate the directory response on its media type; a body that parses as a key set is accepted regardless of `Content-Type`. That is on our list.",
+          "createdAt": "2026-09-24T14:26:56Z",
+          "updatedAt": "2026-09-24T14:26:56Z"
+        }
+      ]
     },
     {
       "number": 135,
@@ -2465,6 +2480,30 @@
           "body": "Cross-reference: #128 raises the same label/member inconsistency and also\nquestions whether the 5.2.1 label-matching rule is needed at all, given 5.2.2\nalready binds the verifier to the covered member. This issue is the narrower,\nbyte-level report for E.2.1 with a minimal fix; happy to close it into #128\nif the editors prefer to track it there.",
           "createdAt": "2026-09-20T18:11:15Z",
           "updatedAt": "2026-09-20T18:11:15Z"
+        }
+      ]
+    },
+    {
+      "number": 136,
+      "id": "I_kwDOOXJyWM8AAAABTVOFjw",
+      "title": "Section 5.5.1: `alg` is restricted to one registry while the container is a JWKS pointing at another",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/136",
+      "state": "OPEN",
+      "author": "kakooch",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "## Summary\n\nSection 5.5.1 points the directory's `alg` at the HTTP Signature Algorithms registry while declaring the\ncontainer a JWKS per RFC 7517, whose `alg` points at the JOSE registry. No value satisfies both. We\nprobed 75 hosts and the 17 live directories have split three ways, which suggests the sentence is being\nread three different ways in the field.\n\n## The sentence\n\nSection 5.5.1, \"Directory Format\", of draft-ietf-webbotauth-httpsig-protocol-00, in full:\n\n> All three types resolve to a JSON Web Key Set (JWKS) as defined in Section 5 of [JWK]. The alg\n> parameter is restricted to algorithms registered in the HTTP Signature Algorithms section of\n> [HTTP-MESSAGE-SIGNATURES-IANA].\n\nIt carries no RFC 2119 keyword.\n\n## Why the two halves conflict\n\n- The first half makes it an RFC 7517 JWK Set. RFC 7517 section 4.4 says `alg` values \"should either be\n  registered in the IANA 'JSON Web Signature and Encryption Algorithms' registry established by [JWA]\n  or be a value that contains a Collision-Resistant Name\", and makes the member OPTIONAL.\n- The second half restricts it to the RFC 9421 section 6.2.2 registry, whose six entries are\n  `rsa-pss-sha512`, `rsa-v1_5-sha256`, `hmac-sha256`, `ecdsa-p256-sha256`, `ecdsa-p384-sha384` and\n  `ed25519`. None of those is in the JOSE registry, and `ed25519` is not a collision-resistant name.\n\nSo a directory that satisfies section 5.5.1 violates RFC 7517's guidance on the same member, and vice versa.\n\nA practical consequence: a stock JOSE library parsing the JWKS may reject `\"alg\":\"ed25519\"` as an\nunknown algorithm, since implementations commonly validate `alg` against the JOSE registry.\n\n## What deployments actually do\n\nOne HTTPS GET per host for the well-known path, 75 hosts, September 2026. Of the 17 that served a\ndirectory with at least one key:\n\n| `alg` | hosts |\n|---|---|\n| absent | 9 |\n| `EdDSA` | 7 |\n| `ed25519` | 1 |\n\nData and method: https://github.com/whisper-sec/web-bot-auth-directory-survey\n\nThree observations on that split:\n\n1. The nine that omit `alg` match the document's own examples. No JWK printed anywhere in the document\n   carries an `alg` member.\n2. The seven publishing `EdDSA` are following RFC 7517's pointer to JOSE. Worth noting that RFC 9864\n   (October 2025), which updates RFC 7518, 8037 and 9053, marks `EdDSA` **Deprecated** in the JOSE\n   registry and registers the fully-specified `Ed25519` in its place, so that answer has moved.\n3. The single `ed25519` is ours, and we arrived at it by reusing one constant for the RFC 9421 signature\n   parameter and the JWK rather than by reading that sentence closely. We mention it because it makes the\n   sample one-of-one rather than independent corroboration.\n\nNobody in the sample publishes `Ed25519`. Nothing appears to break in practice, presumably because\nverifiers select on `kty` and `crv`, which all 17 get right.\n\n## Suggested resolutions\n\nIn order of preference:\n\n1. **Say that `alg` SHOULD be omitted**, and drop the registry restriction. This matches the JWKS\n   examples the document already prints, keeps the JWKS a plain RFC 7517 JWKS, and removes the conflict\n   rather than picking a side. The algorithm is already fully determined by `kty: OKP` plus `crv: Ed25519`.\n2. **Point at JOSE and require the fully-specified value**, i.e. `Ed25519` per RFC 9864, and add it to\n   the examples. This keeps the container conformant to RFC 7517 at the cost of a second identifier for\n   the same algorithm.\n3. **Keep the current pointer but make it explicit**: add an RFC 2119 keyword, note the departure from\n   RFC 7517 section 4.4 and why, and put the value in the examples so implementers see it.\n\nHappy to send a PR for whichever direction is preferred.\n\nContext on the measurement: the survey was run against the text as it stood in\ndraft-meunier-http-message-signatures-directory-05, where the same restriction appeared in section 3.\nSection 5.5.1 of the adopted document fixes that sentence's grammar but not the registry question, so\nthe finding carries over unchanged.\n",
+      "createdAt": "2026-09-26T07:30:10Z",
+      "updatedAt": "2026-09-26T07:38:29Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "kakooch",
+          "authorAssociation": "NONE",
+          "body": "Edited the body and title shortly after filing, for transparency about what changed.\n\nI wrote this against `draft-meunier-http-message-signatures-directory-05`, where the sentence sat in section 3, and filed it at the old repository URL without noticing the redirect here. The body and title now cite section 5.5.1 of `draft-ietf-webbotauth-httpsig-protocol-00` instead, and I dropped two notes that the adopted text has already addressed: the grammar of that sentence is fixed, and the draft is obviously no longer expired. I also removed a count of the document's JWKS examples, which was carried over from the older draft and was wrong for both.\n\nThe substance is unchanged, because the adopted text still says:\n\n> All three types resolve to a JSON Web Key Set (JWKS) as defined in Section 5 of [JWK]. The alg parameter is restricted to algorithms registered in the HTTP Signature Algorithms section of [HTTP-MESSAGE-SIGNATURES-IANA].\n\nand no JWK printed anywhere in the document carries an `alg` member. So the question of which registry applies, and the tension with RFC 7517 section 4.4, both carry over as written.\n\nOne consequence worth flagging: the survey the data comes from was probed against deployments in September 2026, so the three-way split describes what operators did when reading the older section 3. The wording they were reading has changed slightly; the registry pointer has not.",
+          "createdAt": "2026-09-26T07:32:10Z",
+          "updatedAt": "2026-09-26T07:38:29Z"
         }
       ]
     }
