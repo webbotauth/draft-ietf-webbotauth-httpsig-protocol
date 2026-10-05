@@ -1257,8 +1257,8 @@ The corresponding signature base is:
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent";key="agent2": "https://signature-agent.test"
-"@signature-params": ("@authority" "signature-agent";key="agent2")\
+"signature-agent";key="sig2": "https://signature-agent.test"
+"@signature-params": ("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
  ;alg="rsa-pss-sha512"\
@@ -1272,15 +1272,15 @@ This results in the following Signature-Input and Signature header fields being 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: agent2="https://signature-agent.test"
-Signature-Input: sig2=("@authority" "signature-agent";key="agent2")\
+Signature-Agent: sig2="https://signature-agent.test"
+Signature-Input: sig2=("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
  ;alg="rsa-pss-sha512"\
  ;expires=4889289600\
  ;nonce="wcfPQPh7SzkvrIVvhD00vNk9PkxJNY2NVbYl2PVBB4zmUoluSwE7W6bPtF60QA3k8g06FU7PPCD+J58YofY1zg=="\
  ;tag="web-bot-auth"
-Signature: sig2=:gHzpLNeHaHIO19NaJH9YMW5dcVSi2s0wOMBr6p18vcofS106sfC4KBIS0/szPlBBd1vIcyQ88B6CTEWIhRAiVrb9zfX0mx1aG12CSGWcYkSirHeyTxhbuJvXd27ed6skWoy4PjXItq38936ivUQjfdIwXh1aX6HxkAC3vRnEdSNfntkLWeEuIQ5BLIOBGE39fSwg27Qjq6OVWYas/9/aFUr3HA34MXWYdp+//cvlEKDp3kRoLOw9ro0AOr6srHrTeEtxon2afcws1aZVSlPdd2fZSEIGmw9HAHLDCEkFTERu1gH2k/zIEqgy7CAYXI9E5slog0cLg/Vc6+f8gih33g==:
+Signature: sig2=:iOCCPgZeV5D5KlfZLXIFQOZR2njqFiCMZIrb5HRRLrFZR5Wtpsn7HwbKfWYHqW3dYU7HV/RohjNg7fuyQ1Mdy2J4mya9JnQCZtCcIcOK/LM9Yc6g6ZTw0onurllrzEzuNQIFFkBTgPJZlA3rHioFrmDmn+nnN7HaC+it/PA2iGfENHYq9D3Ud7ZeDICmF1s5bsMgc+y+MxTPFQHxOEyhbCDjZbT5yeSkGP1Czczg7Cpf0Fz/wuF3mJJ7TL1mzQk3PPizXFr/EnjdUWri1/W8M/f93d389BFF+qbkISzAvOHEk5TqOoyrzzotTn3xmYN6SCGTHG42fK4rA4Ei0qCnnA==:
 ~~~
 
 ### Legacy Signature-Agent, sf-string {#example-legacy}
@@ -1338,8 +1338,8 @@ The corresponding signature base is:
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent";key="agent2": "https://signature-agent.test"
-"@signature-params": ("@authority" "signature-agent";key="agent2")\
+"signature-agent";key="sig2": "https://signature-agent.test"
+"@signature-params": ("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
  ;alg="ed25519"\
@@ -1353,15 +1353,15 @@ This results in the following Signature-Input and Signature header fields being 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: agent2="https://signature-agent.test"
-Signature-Input: sig2=("@authority" "signature-agent";key="agent2")\
+Signature-Agent: sig2="https://signature-agent.test"
+Signature-Input: sig2=("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
  ;alg="ed25519"\
  ;expires=4889289600\
  ;nonce="n9p433xm+NJ3ph3upfBIGmsuwHw387YV7Q/F+6BSpGCVjYCqQw6rznNA8PVVLySrAWsv0hQtFioQb6E1YsauiA=="\
  ;tag="web-bot-auth"
-Signature: sig2=:RdNFx5Bj6au3YgAMQL/RzmUlZE8QZLIaXGRpw985hWnwPfMxT228NMk6ehRS1PSl4e8PhbNZACSanGdhEwYCCg==:
+Signature: sig2=:CGokAoY/FrPpyuzTe1Fb2kLTAH9Idw6qSFd1+D77r1firsMRCxeuLu5e6O+ek3zQgDMAzjiXtLVfqE00xnABCQ==:
 ~~~
 
 ### Legacy Signature-Agent, sf-string
