@@ -327,7 +327,7 @@ Agents MUST include the following `@signature-params` as defined in {{Section 2.
 : as defined in {{Section 2.3 of HTTP-MESSAGE-SIGNATURES}}
 
 `expires`
-: as defined in {{Section 2.3 of HTTP-MESSAGE-SIGNATURES}}
+: as defined in {{Section 2.3 of HTTP-MESSAGE-SIGNATURES}}. It is RECOMMENDED that `expires` be no more than 24 hours after `created`.
 
 `keyid`
 : MUST be a base64url JWK SHA-256 Thumbprint as defined in {{Section 3.2 of JWK-THUMBPRINT}} for RSA and EC, and in {{Appendix A.3 of JWK-OKP}} for ed25519.
@@ -338,8 +338,6 @@ Agents MUST include the following `@signature-params` as defined in {{Section 2.
 The signing key is available to the agent at request time. Algorithms should be registered with IANA as part of HTTP Message Signatures Algorithm registry.
 
 The creation of the signature is defined in {{Section 3.1 of HTTP-MESSAGE-SIGNATURES}}.
-
-It is RECOMMENDED that expiry be no more than 24 hours.
 
 The components above bind the signature to an authority, not to a request. A
 signature covering `@authority` alone verifies against any method, path, or body
