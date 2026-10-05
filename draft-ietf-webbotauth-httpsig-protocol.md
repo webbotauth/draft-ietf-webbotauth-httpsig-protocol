@@ -577,8 +577,9 @@ Signature-Agent: sig1="https://signature-agent.test/jwks.json"
 ### Directory Format {#configuration}
 
 The resource MUST be a JSON Web Key Set (JWKS) as defined in {{Section 5 of
-JWK}}. The `alg` parameter is restricted to algorithms registered in the HTTP
-Signature Algorithms section of {{HTTP-MESSAGE-SIGNATURES-IANA}}.
+JWK}}. A JWK `alg` member, when present, follows {{Section 4.4 of JWK}}. The
+`alg` signature parameter, when present, follows the HTTP Signature Algorithms
+section of {{HTTP-MESSAGE-SIGNATURES-IANA}}.
 
 The directory MUST be served over HTTPS. A directory served at the well-known
 URI registered in {{wkuri-reg}} MUST be served with media type
