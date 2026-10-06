@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-27T04:11:24.354025+00:00",
+  "timestamp": "2026-10-06T05:21:24.948815+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2431,9 +2431,17 @@
       "labels": [],
       "body": "Against `draft-ietf-webbotauth-httpsig-protocol-00`, \u00a75.2.\n\n\u00a75.2 introduces `expires` as a required `@signature-params` entry, then the\nlist continues with `keyid` and `tag`, and three sentences on other topics\nfollow before the recommendation:\n\n> The signing key is available to the agent at request time. Algorithms should\n> be registered with IANA as part of HTTP Message Signatures Algorithm\n> registry.\n>\n> The creation of the signature is defined in Section 3.1 of\n> [HTTP-MESSAGE-SIGNATURES].\n>\n> It is RECOMMENDED that expiry be no more than 24 hours.\n\nBy that point the nearest concrete noun is \"the signing key\", and the sentence\nsays \"expiry\" rather than naming the parameter. I read it as a bound on key\nlifetime.\n\nThe document uses that word family for both clocks, which is what makes the\nbare noun ambiguous rather than merely loose. \u00a75.5.2 describes a key's own\nexpiry in the same terms: \"Continue to include the old key until its\nexpiration date\", and \"Remove expired keys from the directory\". The directory\nexample in \u00a75.5.1 gives such a key a 30-day life (`nbf` 2024-04-11, `exp`\n2024-05-11). A reader who attaches the 24-hour figure to keys therefore lands\nsomewhere the document contradicts by two orders of magnitude, and has no local\ncue that they have done so.\n\nIn fairness, the paragraph immediately after does resolve it: \"A signature\ncovering @authority alone verifies against any method, path, or body sent to\nthat authority until it expires [...] expires bounds how long that lasts.\"\nSo a reader going straight through recovers one paragraph later. The cost is\nthat they recover by backtracking, having already formed the wrong reading.\nNaming the parameter avoids that for one word.\n\nSuggested fix, either:\n\n- name the parameter: \"It is RECOMMENDED that a signature's `expires` be no\n  more than 24 hours after its `created`.\"\n- or move the sentence up so it attaches directly to the `expires` entry in the\n  `@signature-params` list, where its antecedent is unambiguous.\n",
       "createdAt": "2026-09-09T15:51:25Z",
-      "updatedAt": "2026-09-09T15:51:25Z",
+      "updatedAt": "2026-10-05T15:01:04Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "that's a good pick. as the draft evolved, text might be slightly harder to parse. I've openned #137 to address it",
+          "createdAt": "2026-10-05T15:01:04Z",
+          "updatedAt": "2026-10-05T15:01:04Z"
+        }
+      ]
     },
     {
       "number": 134,
@@ -2447,7 +2455,7 @@
       "labels": [],
       "body": "I'm thinking how to handle ID migration. E.g. you use the header `Signature-Agent: x=\"https://bot.example/.well-known/...\"` but then the keys move for some reason to `something.example/jwks.json`. If you simply update the header to the new address then all the allowlists/denylists/reputation accrued on the web becomes invalid.\n\nSome components of a solution could be\n* Returning a 302 redirect for a period of time when requesting the old json (related: https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/119)\n* Linking the old json from the new one so that verifiers know that it is a successor of the old one\n* Co-signing with both keys for a period of time\n\nIt becomes more tricky when the migration is not 1:1 but bots split or merge.\n\nA related broader issue here is that the protocol could signify many things (e.g. I'm moving the bot's identity from a.com to b.com) but there is no way to test what the ecosystem does with the signal. During my experiments with WBA it was very hard to even know how websites react to these headers (is the new header going to break a bunch of sites? do they recognize the header? do they parse it correctly? did they adopt https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/71? if parsing fails, do they fall back to IP verification? do they treat IP and WBA the same way?)\nThis makes any type of migration very costly.\nMaybe something like the [web platform tests](https://web-platform-tests.org/) could help here, but things like \"does the reputation carry over\" will be very hard to test because providers might not want to share reputation signals back to the client.",
       "createdAt": "2026-09-11T15:37:42Z",
-      "updatedAt": "2026-09-24T14:26:56Z",
+      "updatedAt": "2026-10-05T16:30:45Z",
       "closedAt": null,
       "comments": [
         {
@@ -2456,6 +2464,13 @@
           "body": "An implementer's report against the second half of this issue, the part about not being able to tell what verifiers do with the signal, because we can measure a piece of it.\n\nOn 2026-09-20 we probed 24 candidate hosts for `/.well-known/http-message-signatures-directory` and found five live directories (bounded probe, not a census: 18 returned 404, one returned 401, three failed DNS). Four serve a JWK Set. One, `www.shopify.com`, serves a bare JWK object with no `keys` member. Two shipped verifiers then give opposite answers on that same directory: the public checker at webbotauth.net rejects it (\"Body does not contain a keys array\") and will not grade it, while ours accepts it and pins Shopify's exact body in a frozen test. Neither is wrong by the text. Section 5.5.1 says the three types \"resolve to a JSON Web Key Set\" with no 2119 keyword, and the verifier duty is a SHOULD scoped to entries. So the answer to \"do they parse it correctly?\" is that the question has no single answer today, and the draft is why. A separate fault on the same host, not to be blurred with the first: the apex `shopify.com` returns a 301 to `www`, and Section 5.5's \"MUST be served with a 200\" is a real MUST, so a verifier resolving `Signature-Agent: \"https://shopify.com\"` conformantly gets a discovery failure rather than a key.\n\nTwo observations from our own code that bear on the migration question. First, we already branch on draft era on the wire in two places: whether `Signature-Agent` is the legacy bare string or the dictionary form, and whether member resolution is strictly keyed to the signature label or lenient with a fallback. That is a live example of how expensive a signal change already is for a verifier, before any identity moves. Second, each of the three migration components you list (a 302 for a period, the new directory linking the old, co-signing) only helps a verifier that keeps history. Ours keeps an append-only log of (key, domain) observations for exactly that reason: continuity or succession can be computed over the log later, rather than needing a rebuild when the rule arrives. A verifier without such a log sees a migrated identity as a new name, whatever the old directory says about it.\n\nOne thing we do not do, since a report that only lists what we got right is not a report: we do not gate the directory response on its media type; a body that parses as a key set is accepted regardless of `Content-Type`. That is on our list.",
           "createdAt": "2026-09-24T14:26:56Z",
           "updatedAt": "2026-09-24T14:26:56Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Long story short: i don't think the reputation can carry over solely based on the protocol draft. It would be a distinct draft and a distinct protocol.\n\nGiven the identifier is the URL, migration is going to be costly indeed. Co-signing seems to be the easiest as that allows accrual of reputation on a new identifier.\n\nAn other alternative may be to use external discovery method. I'm thinking of [registry](https://datatracker.ietf.org/doc/html/draft-meunier-webbotauth-registry-03), but that may as well be a DNS record or other API.\n\nThere are use cases I think. It's mostly about where to discuss and addess them.",
+          "createdAt": "2026-10-05T16:30:44Z",
+          "updatedAt": "2026-10-05T16:30:44Z"
         }
       ]
     },
@@ -6665,6 +6680,104 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 137,
+      "id": "PR_kwDOOXJyWM8AAAABGu9OAg",
+      "title": "[protocol] tie 24h recommendation to expires",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/137",
+      "state": "OPEN",
+      "author": "thibmeu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "thibmeu"
+      ],
+      "labels": [
+        "enhancement"
+      ],
+      "body": "Closes #133\r\n\r\n@sandormajor",
+      "createdAt": "2026-10-05T14:59:46Z",
+      "updatedAt": "2026-10-05T14:59:46Z",
+      "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
+      "baseRefName": "main",
+      "baseRefOid": "9007062e0b984803d8b0b618f43c03c5fa070b32",
+      "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
+      "headRefName": "issue-133-expires-wording",
+      "headRefOid": "5a71ee1f59551390f6fcba0cee66028ef76f30bf",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 138,
+      "id": "PR_kwDOOXJyWM8AAAABGvPyXQ",
+      "title": "[protocol] key Signature-Agent member by label in test vectors",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/138",
+      "state": "OPEN",
+      "author": "thibmeu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "thibmeu"
+      ],
+      "labels": [
+        "bug"
+      ],
+      "body": "Regenerated with cloudflare/web-bot-auth scripts/test-vectors.ts using signatureAgentKey = label.\r\n\r\nCloses #135\r\n\r\n@sandormajor",
+      "createdAt": "2026-10-05T15:23:45Z",
+      "updatedAt": "2026-10-05T19:02:20Z",
+      "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
+      "baseRefName": "main",
+      "baseRefOid": "9007062e0b984803d8b0b618f43c03c5fa070b32",
+      "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
+      "headRefName": "issue-135-signature-agent-label",
+      "headRefOid": "f7ac7ae675984366aefe4d9ffccb7028c136ed5a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "FearmessOp",
+          "authorAssociation": "NONE",
+          "body": "Confirmed, the regenerated E.2.1 verifies under a strict 5.2.1 reading on my side. Will re-pin my fixture once this lands.",
+          "createdAt": "2026-10-05T19:02:19Z",
+          "updatedAt": "2026-10-05T19:02:19Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 139,
+      "id": "PR_kwDOOXJyWM8AAAABGvW_Tg",
+      "title": "[protocol] separate JWK alg from signature alg registries",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/139",
+      "state": "OPEN",
+      "author": "thibmeu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "thibmeu"
+      ],
+      "labels": [
+        "enhancement"
+      ],
+      "body": "Closes #136\r\n\r\n#136 is a slight overstatement I believe. The two registries are indeed distinct, but there are some overlaps despite a different name. I'm correcting the ambiguous sentence pointing to the two registries\r\n\r\n@sandormajor for review\r\n\r\nfyi @kakooch",
+      "createdAt": "2026-10-05T15:33:08Z",
+      "updatedAt": "2026-10-05T15:34:11Z",
+      "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
+      "baseRefName": "main",
+      "baseRefOid": "9007062e0b984803d8b0b618f43c03c5fa070b32",
+      "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
+      "headRefName": "issue-136-alg-registries",
+      "headRefOid": "c1fda924e2275dd924697451f721f57471949c52",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
