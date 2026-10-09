@@ -5,8 +5,8 @@
 Web Bot Auth                                                  T. Meunier
 Internet-Draft                                                Cloudflare
 Intended status: Standards Track                                S. Major
-Expires: 14 March 2027                                            Google
-                                                       10 September 2026
+Expires: 12 April 2027                                            Google
+                                                          9 October 2026
 
 
              HTTP Message Signatures for automated traffic
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 14 March 2027.
+   This Internet-Draft will expire on 12 April 2027.
 
 Copyright Notice
 
@@ -435,7 +435,9 @@ Table of Contents
 
    created  as defined in Section 2.3 of [HTTP-MESSAGE-SIGNATURES]
 
-   expires  as defined in Section 2.3 of [HTTP-MESSAGE-SIGNATURES]
+   expires  as defined in Section 2.3 of [HTTP-MESSAGE-SIGNATURES].  It
+      is RECOMMENDED that expires be no more than 24 hours after
+      created.
 
    keyid  MUST be a base64url JWK SHA-256 Thumbprint as defined in
       Section 3.2 of [JWK-THUMBPRINT] for RSA and EC, and in
@@ -449,8 +451,6 @@ Table of Contents
 
    The creation of the signature is defined in Section 3.1 of
    [HTTP-MESSAGE-SIGNATURES].
-
-   It is RECOMMENDED that expiry be no more than 24 hours.
 
    The components above bind the signature to an authority, not to a
    request.  A signature covering @authority alone verifies against any
