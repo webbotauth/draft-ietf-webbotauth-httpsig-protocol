@@ -2166,8 +2166,9 @@ Signature-Agent: sig1="https://signature-agent.test/jwks.json"
           <h4 id="name-directory-format">
 <a href="#section-5.5.1" class="section-number selfRef">5.5.1. </a><a href="#name-directory-format" class="section-name selfRef">Directory Format</a>
           </h4>
-<p id="section-5.5.1-1">The resource <span class="bcp14">MUST</span> be a JSON Web Key Set (JWKS) as defined in <span><a href="https://rfc-editor.org/rfc/rfc7517#section-5" class="relref">Section 5</a> of [<a href="#JWK" class="cite xref">JWK</a>]</span>. The <code>alg</code> parameter is restricted to algorithms registered in the HTTP
-Signature Algorithms section of <span>[<a href="#HTTP-MESSAGE-SIGNATURES-IANA" class="cite xref">HTTP-MESSAGE-SIGNATURES-IANA</a>]</span>.<a href="#section-5.5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.5.1-1">The resource <span class="bcp14">MUST</span> be a JSON Web Key Set (JWKS) as defined in <span><a href="https://rfc-editor.org/rfc/rfc7517#section-5" class="relref">Section 5</a> of [<a href="#JWK" class="cite xref">JWK</a>]</span>. A JWK <code>alg</code> member, when present, follows <span><a href="https://rfc-editor.org/rfc/rfc7517#section-4.4" class="relref">Section 4.4</a> of [<a href="#JWK" class="cite xref">JWK</a>]</span>. The
+<code>alg</code> signature parameter, when present, follows the HTTP Signature Algorithms
+section of <span>[<a href="#HTTP-MESSAGE-SIGNATURES-IANA" class="cite xref">HTTP-MESSAGE-SIGNATURES-IANA</a>]</span>.<a href="#section-5.5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.5.1-2">The directory <span class="bcp14">MUST</span> be served over HTTPS. A directory served at the well-known
 URI registered in <a href="#wkuri-reg" class="auto internal xref">Section 8.1</a> <span class="bcp14">MUST</span> be served with media type
 <code>application/http-message-signatures-directory+json</code>.<a href="#section-5.5.1-2" class="pilcrow">¶</a></p>

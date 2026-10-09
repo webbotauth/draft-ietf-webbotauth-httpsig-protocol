@@ -714,8 +714,9 @@ Table of Contents
 5.5.1.  Directory Format
 
    The resource MUST be a JSON Web Key Set (JWKS) as defined in
-   Section 5 of [JWK].  The alg parameter is restricted to algorithms
-   registered in the HTTP Signature Algorithms section of
+   Section 5 of [JWK].  A JWK alg member, when present, follows
+   Section 4.4 of [JWK].  The alg signature parameter, when present,
+   follows the HTTP Signature Algorithms section of
    [HTTP-MESSAGE-SIGNATURES-IANA].
 
    The directory MUST be served over HTTPS.  A directory served at the
