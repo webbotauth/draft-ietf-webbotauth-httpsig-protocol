@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-06T05:21:24.948815+00:00",
+  "timestamp": "2026-10-11T04:34:52.850531+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2424,15 +2424,15 @@
       "id": "I_kwDOOXJyWM8AAAABQfdNXQ",
       "title": "\u00a75.2: \"expiry\" is separated from its antecedent and reads as key expiry",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/133",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "pierluc-codes",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Against `draft-ietf-webbotauth-httpsig-protocol-00`, \u00a75.2.\n\n\u00a75.2 introduces `expires` as a required `@signature-params` entry, then the\nlist continues with `keyid` and `tag`, and three sentences on other topics\nfollow before the recommendation:\n\n> The signing key is available to the agent at request time. Algorithms should\n> be registered with IANA as part of HTTP Message Signatures Algorithm\n> registry.\n>\n> The creation of the signature is defined in Section 3.1 of\n> [HTTP-MESSAGE-SIGNATURES].\n>\n> It is RECOMMENDED that expiry be no more than 24 hours.\n\nBy that point the nearest concrete noun is \"the signing key\", and the sentence\nsays \"expiry\" rather than naming the parameter. I read it as a bound on key\nlifetime.\n\nThe document uses that word family for both clocks, which is what makes the\nbare noun ambiguous rather than merely loose. \u00a75.5.2 describes a key's own\nexpiry in the same terms: \"Continue to include the old key until its\nexpiration date\", and \"Remove expired keys from the directory\". The directory\nexample in \u00a75.5.1 gives such a key a 30-day life (`nbf` 2024-04-11, `exp`\n2024-05-11). A reader who attaches the 24-hour figure to keys therefore lands\nsomewhere the document contradicts by two orders of magnitude, and has no local\ncue that they have done so.\n\nIn fairness, the paragraph immediately after does resolve it: \"A signature\ncovering @authority alone verifies against any method, path, or body sent to\nthat authority until it expires [...] expires bounds how long that lasts.\"\nSo a reader going straight through recovers one paragraph later. The cost is\nthat they recover by backtracking, having already formed the wrong reading.\nNaming the parameter avoids that for one word.\n\nSuggested fix, either:\n\n- name the parameter: \"It is RECOMMENDED that a signature's `expires` be no\n  more than 24 hours after its `created`.\"\n- or move the sentence up so it attaches directly to the `expires` entry in the\n  `@signature-params` list, where its antecedent is unambiguous.\n",
       "createdAt": "2026-09-09T15:51:25Z",
-      "updatedAt": "2026-10-05T15:01:04Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-09T15:54:37Z",
+      "closedAt": "2026-10-09T15:54:37Z",
       "comments": [
         {
           "author": "thibmeu",
@@ -2455,7 +2455,7 @@
       "labels": [],
       "body": "I'm thinking how to handle ID migration. E.g. you use the header `Signature-Agent: x=\"https://bot.example/.well-known/...\"` but then the keys move for some reason to `something.example/jwks.json`. If you simply update the header to the new address then all the allowlists/denylists/reputation accrued on the web becomes invalid.\n\nSome components of a solution could be\n* Returning a 302 redirect for a period of time when requesting the old json (related: https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/119)\n* Linking the old json from the new one so that verifiers know that it is a successor of the old one\n* Co-signing with both keys for a period of time\n\nIt becomes more tricky when the migration is not 1:1 but bots split or merge.\n\nA related broader issue here is that the protocol could signify many things (e.g. I'm moving the bot's identity from a.com to b.com) but there is no way to test what the ecosystem does with the signal. During my experiments with WBA it was very hard to even know how websites react to these headers (is the new header going to break a bunch of sites? do they recognize the header? do they parse it correctly? did they adopt https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/71? if parsing fails, do they fall back to IP verification? do they treat IP and WBA the same way?)\nThis makes any type of migration very costly.\nMaybe something like the [web platform tests](https://web-platform-tests.org/) could help here, but things like \"does the reputation carry over\" will be very hard to test because providers might not want to share reputation signals back to the client.",
       "createdAt": "2026-09-11T15:37:42Z",
-      "updatedAt": "2026-10-05T16:30:45Z",
+      "updatedAt": "2026-10-10T22:06:19Z",
       "closedAt": null,
       "comments": [
         {
@@ -2471,6 +2471,13 @@
           "body": "Long story short: i don't think the reputation can carry over solely based on the protocol draft. It would be a distinct draft and a distinct protocol.\n\nGiven the identifier is the URL, migration is going to be costly indeed. Co-signing seems to be the easiest as that allows accrual of reputation on a new identifier.\n\nAn other alternative may be to use external discovery method. I'm thinking of [registry](https://datatracker.ietf.org/doc/html/draft-meunier-webbotauth-registry-03), but that may as well be a DNS record or other API.\n\nThere are use cases I think. It's mostly about where to discuss and addess them.",
           "createdAt": "2026-10-05T16:30:44Z",
           "updatedAt": "2026-10-05T16:30:44Z"
+        },
+        {
+          "author": "AVAVERIFY",
+          "authorAssociation": "NONE",
+          "body": "A correction to the probe numbers in my comment above, then a sixth directory and what measuring it turned up in our own verifier.\n\nCorrection. We attempted 27 hosts. Three failed DNS resolution and were excluded before any HTTP result, leaving 24: five live directories, 18 not found, one requiring authentication. My comment folded the three DNS failures back into a total they had been excluded from, so its parts summed to 27 against a stated 24. The 24 is right; the sentence was wrong.\n\nSixth live directory, measured 2026-09-29: `agent.bot.goog` serves a JWK Set of five Ed25519 keys as `application/http-message-signatures-directory+json` with a signed response (tag `http-message-signatures-directory`, 300-second window). Two things differ from every other directory we had seen. The `kid` of each key is a six-character label, not the RFC 7638 thumbprint, and the response signature's `keyid` is one of those labels, so neither follows Section 5.2 or the Section 5.5 note. And the response signature covers `(\"@authority\";req)` only, with no Content-Digest header, so it is not the Appendix B proof, though it does verify as a possession proof.\n\nWhat that found in our verifier: we had assumed the thumbprint rule. A key whose `kid` was not its thumbprint was dropped at parse time, a `keyid` that was not thumbprint-shaped was rejected as malformed, and a signed request from that origin got a conclusive \"key not published\" verdict for a key that is published. We have changed it: `kid` and `keyid` are selectors, the identity of a key is computed from its material, and a label that disagrees with the material is a warning rather than a rejection. That is the reading Section 5.5 itself suggests (\"check the directory's own labelling rather than trusting it\"), and it bears on this issue: any migration mechanism that a verifier keys on labels will break the first time a directory labels keys its own way. Keying on material survives it.",
+          "createdAt": "2026-10-10T22:06:19Z",
+          "updatedAt": "2026-10-10T22:06:19Z"
         }
       ]
     },
@@ -2479,15 +2486,15 @@
       "id": "I_kwDOOXJyWM8AAAABSILElA",
       "title": "E.2.1: signature label \"sig2\" does not match Signature-Agent member \"agent2\"",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/135",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "FearmessOp",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "In Appendix E.2.1 of draft-ietf-webbotauth-httpsig-protocol-00, `Signature-Input` and `Signature` use the label `sig2`, but the `Signature-Agent` field uses the member key `agent2`, and the covered component is `\"signature-agent\";key=\"agent2\"`.\n\nSection 5.2.1 requires the covered `Signature-Agent` member to be keyed by the signature label, so the example does not follow its own rule.\n\nThe signature itself checks out. I re-derived the 375-byte signature base and verified the 64-byte Ed25519 signature against the RFC 9421 B.1.4 public key; both match. This is a naming inconsistency in the example, not a bad vector.\n\nTwo ways to fix it:\n\n- Rename the label in `Signature-Input` and `Signature` from `sig2` to `agent2`. The label is not part of the signature base, so the published base and signature bytes stay valid. This is the smaller change.\n- Or, if `sig2` is the intended label, rename the `Signature-Agent` member and the `key` parameter to `sig2`, then regenerate the base and signature.\n\nWhich one is intended?\n\nUnrelated nit: the draft text still lists https://github.com/thibmeu/http-message-signatures-directory as the source repository; that URL now redirects here.\n\nI ran into this while implementing the profile independently in Node.js (https://www.npmjs.com/package/@agentsig/core), and I'm using the vector as a negative test case for label binding in the meantime.",
       "createdAt": "2026-09-19T15:55:39Z",
-      "updatedAt": "2026-09-20T18:11:15Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-09T15:55:04Z",
+      "closedAt": "2026-10-09T15:55:04Z",
       "comments": [
         {
           "author": "FearmessOp",
@@ -2503,15 +2510,15 @@
       "id": "I_kwDOOXJyWM8AAAABTVOFjw",
       "title": "Section 5.5.1: `alg` is restricted to one registry while the container is a JWKS pointing at another",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/136",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "kakooch",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "## Summary\n\nSection 5.5.1 points the directory's `alg` at the HTTP Signature Algorithms registry while declaring the\ncontainer a JWKS per RFC 7517, whose `alg` points at the JOSE registry. No value satisfies both. We\nprobed 75 hosts and the 17 live directories have split three ways, which suggests the sentence is being\nread three different ways in the field.\n\n## The sentence\n\nSection 5.5.1, \"Directory Format\", of draft-ietf-webbotauth-httpsig-protocol-00, in full:\n\n> All three types resolve to a JSON Web Key Set (JWKS) as defined in Section 5 of [JWK]. The alg\n> parameter is restricted to algorithms registered in the HTTP Signature Algorithms section of\n> [HTTP-MESSAGE-SIGNATURES-IANA].\n\nIt carries no RFC 2119 keyword.\n\n## Why the two halves conflict\n\n- The first half makes it an RFC 7517 JWK Set. RFC 7517 section 4.4 says `alg` values \"should either be\n  registered in the IANA 'JSON Web Signature and Encryption Algorithms' registry established by [JWA]\n  or be a value that contains a Collision-Resistant Name\", and makes the member OPTIONAL.\n- The second half restricts it to the RFC 9421 section 6.2.2 registry, whose six entries are\n  `rsa-pss-sha512`, `rsa-v1_5-sha256`, `hmac-sha256`, `ecdsa-p256-sha256`, `ecdsa-p384-sha384` and\n  `ed25519`. None of those is in the JOSE registry, and `ed25519` is not a collision-resistant name.\n\nSo a directory that satisfies section 5.5.1 violates RFC 7517's guidance on the same member, and vice versa.\n\nA practical consequence: a stock JOSE library parsing the JWKS may reject `\"alg\":\"ed25519\"` as an\nunknown algorithm, since implementations commonly validate `alg` against the JOSE registry.\n\n## What deployments actually do\n\nOne HTTPS GET per host for the well-known path, 75 hosts, September 2026. Of the 17 that served a\ndirectory with at least one key:\n\n| `alg` | hosts |\n|---|---|\n| absent | 9 |\n| `EdDSA` | 7 |\n| `ed25519` | 1 |\n\nData and method: https://github.com/whisper-sec/web-bot-auth-directory-survey\n\nThree observations on that split:\n\n1. The nine that omit `alg` match the document's own examples. No JWK printed anywhere in the document\n   carries an `alg` member.\n2. The seven publishing `EdDSA` are following RFC 7517's pointer to JOSE. Worth noting that RFC 9864\n   (October 2025), which updates RFC 7518, 8037 and 9053, marks `EdDSA` **Deprecated** in the JOSE\n   registry and registers the fully-specified `Ed25519` in its place, so that answer has moved.\n3. The single `ed25519` is ours, and we arrived at it by reusing one constant for the RFC 9421 signature\n   parameter and the JWK rather than by reading that sentence closely. We mention it because it makes the\n   sample one-of-one rather than independent corroboration.\n\nNobody in the sample publishes `Ed25519`. Nothing appears to break in practice, presumably because\nverifiers select on `kty` and `crv`, which all 17 get right.\n\n## Suggested resolutions\n\nIn order of preference:\n\n1. **Say that `alg` SHOULD be omitted**, and drop the registry restriction. This matches the JWKS\n   examples the document already prints, keeps the JWKS a plain RFC 7517 JWKS, and removes the conflict\n   rather than picking a side. The algorithm is already fully determined by `kty: OKP` plus `crv: Ed25519`.\n2. **Point at JOSE and require the fully-specified value**, i.e. `Ed25519` per RFC 9864, and add it to\n   the examples. This keeps the container conformant to RFC 7517 at the cost of a second identifier for\n   the same algorithm.\n3. **Keep the current pointer but make it explicit**: add an RFC 2119 keyword, note the departure from\n   RFC 7517 section 4.4 and why, and put the value in the examples so implementers see it.\n\nHappy to send a PR for whichever direction is preferred.\n\nContext on the measurement: the survey was run against the text as it stood in\ndraft-meunier-http-message-signatures-directory-05, where the same restriction appeared in section 3.\nSection 5.5.1 of the adopted document fixes that sentence's grammar but not the registry question, so\nthe finding carries over unchanged.\n",
       "createdAt": "2026-09-26T07:30:10Z",
-      "updatedAt": "2026-09-26T07:38:29Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-09T15:56:12Z",
+      "closedAt": "2026-10-09T15:56:12Z",
       "comments": [
         {
           "author": "kakooch",
@@ -6686,7 +6693,7 @@
       "id": "PR_kwDOOXJyWM8AAAABGu9OAg",
       "title": "[protocol] tie 24h recommendation to expires",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/137",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thibmeu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -6697,26 +6704,55 @@
       ],
       "body": "Closes #133\r\n\r\n@sandormajor",
       "createdAt": "2026-10-05T14:59:46Z",
-      "updatedAt": "2026-10-05T14:59:46Z",
+      "updatedAt": "2026-10-09T15:54:40Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "9007062e0b984803d8b0b618f43c03c5fa070b32",
       "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "issue-133-expires-wording",
       "headRefOid": "5a71ee1f59551390f6fcba0cee66028ef76f30bf",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-10-09T15:54:35Z",
+      "mergedAt": "2026-10-09T15:54:35Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "73881c85453d6c2194c7982608cc93c4ddfe66a6"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABRiTFGQ",
+          "commit": {
+            "abbreviatedOid": "5a71ee1"
+          },
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-09T15:01:14Z",
+          "updatedAt": "2026-10-09T15:01:14Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABRiT0nQ",
+          "commit": {
+            "abbreviatedOid": "5a71ee1"
+          },
+          "author": "punkeel",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-09T15:02:14Z",
+          "updatedAt": "2026-10-09T15:02:14Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 138,
       "id": "PR_kwDOOXJyWM8AAAABGvPyXQ",
       "title": "[protocol] key Signature-Agent member by label in test vectors",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/138",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thibmeu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -6727,17 +6763,19 @@
       ],
       "body": "Regenerated with cloudflare/web-bot-auth scripts/test-vectors.ts using signatureAgentKey = label.\r\n\r\nCloses #135\r\n\r\n@sandormajor",
       "createdAt": "2026-10-05T15:23:45Z",
-      "updatedAt": "2026-10-05T19:02:20Z",
+      "updatedAt": "2026-10-09T15:55:07Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "9007062e0b984803d8b0b618f43c03c5fa070b32",
       "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "issue-135-signature-agent-label",
       "headRefOid": "f7ac7ae675984366aefe4d9ffccb7028c136ed5a",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-10-09T15:55:02Z",
+      "mergedAt": "2026-10-09T15:55:02Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "750440f41456ba9215d93fb74984a6b5d53b7381"
+      },
       "comments": [
         {
           "author": "FearmessOp",
@@ -6747,14 +6785,28 @@
           "updatedAt": "2026-10-05T19:02:19Z"
         }
       ],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABRiVcYw",
+          "commit": {
+            "abbreviatedOid": "f7ac7ae"
+          },
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "nice catch :)",
+          "createdAt": "2026-10-09T15:04:31Z",
+          "updatedAt": "2026-10-09T15:04:31Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 139,
       "id": "PR_kwDOOXJyWM8AAAABGvW_Tg",
       "title": "[protocol] separate JWK alg from signature alg registries",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/139",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thibmeu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -6765,19 +6817,35 @@
       ],
       "body": "Closes #136\r\n\r\n#136 is a slight overstatement I believe. The two registries are indeed distinct, but there are some overlaps despite a different name. I'm correcting the ambiguous sentence pointing to the two registries\r\n\r\n@sandormajor for review\r\n\r\nfyi @kakooch",
       "createdAt": "2026-10-05T15:33:08Z",
-      "updatedAt": "2026-10-05T15:34:11Z",
+      "updatedAt": "2026-10-09T15:56:14Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "9007062e0b984803d8b0b618f43c03c5fa070b32",
       "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "issue-136-alg-registries",
       "headRefOid": "c1fda924e2275dd924697451f721f57471949c52",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-10-09T15:56:11Z",
+      "mergedAt": "2026-10-09T15:56:10Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "be12662f3c5cc97e10e65a37355bdb33ba0d2fc4"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABRiT4Ng",
+          "commit": {
+            "abbreviatedOid": "c1fda92"
+          },
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-09T15:02:19Z",
+          "updatedAt": "2026-10-09T15:02:19Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
