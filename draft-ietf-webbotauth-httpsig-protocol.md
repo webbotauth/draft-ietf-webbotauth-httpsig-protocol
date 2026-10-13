@@ -506,10 +506,15 @@ A resulting signature MUST satisfy this profile. The Origin MAY
 request additional parameters defined by {{HTTP-MESSAGE-SIGNATURES}}, including
 `nonce`.
 
+Signature requests MUST be consistent with this profile. Agents MAY ignore
+signature requests that do not fit their signing policy, as described in
+{{Section 5.2 of HTTP-MESSAGE-SIGNATURES}}.
+
 An Origin can refuse requests without valid signatures using an appropriate HTTP
 status code, usually 403 (Forbidden) ({{Section 15.5.4 of HTTP}}). The Origin
-SHOULD include `Accept-Signature` in that response to indicate which signatures
-would allow the request to be accepted.
+SHOULD include `Accept-Signature` in that response to indicate its signature
+requirements. A valid signature does not guarantee that the request will be
+accepted; acceptance remains subject to the Origin's policy.
 
 An Origin can also accept a request without a valid signature and send
 `Accept-Signature` in the successful response to indicate that a signed request
