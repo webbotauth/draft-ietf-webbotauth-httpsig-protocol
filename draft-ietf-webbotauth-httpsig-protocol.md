@@ -817,29 +817,17 @@ to treat unsigned requests differently nor gives it grounds to.
 
 # Privacy Considerations {#privacy-considerations}
 
-## Public Identity
+## Identification and Correlation
 
-This protocol assumes that automated clients identify themselves
-explicitly using digital signatures. The identity associated with a signing
-key is expected to be publicly discoverable for verification purposes. This
-reduces anonymity and allows receivers to associate requests with specific
-agents. If an agent wishes not to identify itself, this is not the right
-choice of protocol for it.
+This protocol enables receivers to recognise requests that carry the same
+identifier and to correlate them, including across origins. Key rotation does
+not prevent this correlation when the identifier remains unchanged
+({{rotation}}). This protocol is unsuitable for agents that need to avoid such
+identification.
 
-## No Human Correlation
-
-A key tied to a specific human individual exposes personally identifiable
-information and makes the key usable for user tracking or profiling. A key that
-represents a role, company, or automation identity (e.g., "news-aggregator-bot",
-"example-crawler-v1") avoids this.
-
-## Minimizing Tracking Risks
-
-To limit tracking risks, implementations SHOULD avoid long-lived, globally
-unique key identifiers unless strictly necessary. Key rotation SHOULD be
-supported, and clients SHOULD take care to avoid signing information that
-could be used to correlate activity across contexts, especially where
-sensitive user data is involved.
+Agents whose identifier would be associated with an individual human, rather
+than a service or role, expose that person to the same correlation. This
+protocol is not suited to such deployments.
 
 ## Directory Content and Access Patterns
 
