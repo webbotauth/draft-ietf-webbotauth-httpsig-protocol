@@ -499,12 +499,30 @@ first request rather than before it. Later requests verify from cache
 
 ## Requesting a Message Signature {#requesting-message-signature}
 
-{{Section 5 of HTTP-MESSAGE-SIGNATURES}} defines the `Accept-Signature` field which can be used to request a Message Signature from a client by an origin.
-An Origin MAY choose to request signatures from clients that did not initially
-provide them. A resulting signature MUST satisfy this profile. The Origin MAY
+An Origin that expects a signature SHOULD request one from clients that did not
+provide it, using the `Accept-Signature` field defined in
+{{Section 5 of HTTP-MESSAGE-SIGNATURES}}.
+A resulting signature MUST satisfy this profile. The Origin MAY
 request additional parameters defined by {{HTTP-MESSAGE-SIGNATURES}}, including
 `nonce`.
-The status code SHOULD be 403 Forbidden as defined in {{Section 15.5.4 of HTTP}}.
+
+Signature requests MUST be consistent with this profile. Agents MAY ignore
+signature requests that do not fit their signing policy, as described in
+{{Section 5.2 of HTTP-MESSAGE-SIGNATURES}}.
+
+An Origin can refuse requests without valid signatures using an appropriate HTTP
+status code, usually 403 (Forbidden) ({{Section 15.5.4 of HTTP}}). The Origin
+SHOULD include `Accept-Signature` in that response to indicate its signature
+requirements. A valid signature does not guarantee that the request will be
+accepted; acceptance remains subject to the Origin's policy.
+
+An Origin can also accept a request without a valid signature and send
+`Accept-Signature` in the successful response to indicate that a signed request
+would receive different treatment.
+
+Origins that do not send `Accept-Signature` in either case SHOULD NOT rely on
+clients sending signatures unless the parties have a private arrangement. Such
+arrangements need to specify when and how signatures are sent.
 
 An Origin that detects a signature or nonce has been used more often than its
 policy permits MAY request a new signature and respond with 429 Too Many
@@ -805,15 +823,10 @@ verifier whose cache expires in the same window.
 
 ## Unsigned Requests {#unsigned-requests}
 
-Most HTTP requests carry no signature. A verifier that sees none has learned
-nothing about the sender: not that it is automated, not that it is human, not
-that it is evading anything. Absence of a signal is not evidence about the
-party that did not send it, in the same way that a failed fetch
-({{discovery-failure}}) is not evidence about the signer.
-
-What an origin does with a request it cannot attribute is its own decision, as
-it was before this protocol existed. This document neither requires an origin
-to treat unsigned requests differently nor gives it grounds to.
+An unsigned request does not establish whether the sender is human or automated,
+or whether it is evading identification. Origins decide how to handle unsigned
+requests and can request a signature as described in
+{{requesting-message-signature}}.
 
 # Privacy Considerations {#privacy-considerations}
 
@@ -1148,6 +1161,13 @@ availability: at expiry every consumer drops that operator's keys to unverified
 at once, with no serving stale. Operators should set `expires` well beyond the
 republication interval of any list they expect to appear in. The lever for
 faster revocation is publishing more often, not signing shorter.
+
+## Signing Conditionally
+
+Agents can sign every request or sign only when an origin requests a signature
+({{requesting-message-signature}}). Conditional signing adds a round trip when
+the origin requires a signature. Non-idempotent requests cannot be automatically
+retried without additional protocol mechanisms; see {{Section 9.2.2 of HTTP}}.
 
 ## Rollout and Fallback
 
