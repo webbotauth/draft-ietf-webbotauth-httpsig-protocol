@@ -1059,7 +1059,12 @@ Verifiers should keep three outcomes distinct:
 
 `unverified`
 : the verifier cannot obtain enough information to decide, for example because
-  directory discovery failed or the key is unknown.
+  directory discovery failed or the resolved directory does not provide the key.
+
+Whether the verifier has seen the Signature-Agent URL before does not change the
+outcome. A request that passes verification with a key that a resolved URL provides
+is verified, even when the verifier has no prior record of that URL. Whether the
+URL appears on a list the origin maintains is a separate input to origin policy.
 
 Origins can apply local policy to each outcome. During deployment, treating
 `unverified` as one bot-management signal is safer than treating it as either
