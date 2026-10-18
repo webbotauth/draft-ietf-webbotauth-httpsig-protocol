@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-15T03:38:08.799621+00:00",
+  "timestamp": "2026-10-18T03:30:16.344333+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2583,9 +2583,9 @@
         "bug",
         "question"
       ],
-      "body": "Raised on the [mailing](https://mailarchive.ietf.org/arch/msg/web-bot-auth/UgZUzO6wFX1WSDQbIJ3cwHePr8M/)\n\nThe current draft uses `tag=\"web-bot-auth\"` within HTTP Message Signature for client and servers to identify the usage of web bot auth usage.\n\nThere are no namespace for `tag`. This means that there might be another draft which would rely on web-bot-auth tag down the line, without a clear way to manage conflict resolution.\n\n@mnot proposes four path forward\n1) Carve out a standards-managed space inside \"tag\" (messy)\n2) Create an extension attribute that is reserved for standards use (\"registered-tag\"?)\n3) Define a different header field set with identical syntax and processing (e.g., WBA-Signature)",
+      "body": "Raised on the [mailing](https://mailarchive.ietf.org/arch/msg/web-bot-auth/UgZUzO6wFX1WSDQbIJ3cwHePr8M/)\n\nThe current draft uses `tag=\"web-bot-auth\"` within HTTP Message Signature for client and servers to identify the usage of web bot auth usage.\n\nThere are no namespace for `tag`. This means that there might be another draft which would rely on web-bot-auth tag down the line, without a clear way to manage conflict resolution.\n\n@mnot proposes four path forward\n1) Carve out a standards-managed space inside \"tag\" (messy)\n2) Create an extension attribute that is reserved for standards use (\"registered-tag\"?)\n3) Define a different header field set with identical syntax and processing (e.g., WBA-Signature)\n4) Create an extension attribute that is \"webbotauth\"",
       "createdAt": "2026-10-13T20:32:54Z",
-      "updatedAt": "2026-10-13T23:34:48Z",
+      "updatedAt": "2026-10-16T18:21:49Z",
       "closedAt": null,
       "comments": [
         {
