@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-18T03:30:16.344333+00:00",
+  "timestamp": "2026-10-20T03:52:10.054714+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2535,9 +2535,17 @@
       ],
       "body": "Origins can reject a signed request without explaining why verification failed. This makes deployment failures harder to diagnose.\n\nConsider using [RFC 9457](https://www.rfc-editor.org/info/rfc9457/) to report signature verification errors. Define which failures to expose and whether shared problem types are needed. This needs to avoid the disclosure of sensitive state.\n\nRaised in [the implementation-report thread](https://mailarchive.ietf.org/arch/msg/web-bot-auth/fDM_deEVKXJLjgbM83YKAgFfEfc/).",
       "createdAt": "2026-10-12T23:12:38Z",
-      "updatedAt": "2026-10-12T23:12:38Z",
+      "updatedAt": "2026-10-18T13:34:49Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "htl-syterme",
+          "authorAssociation": "NONE",
+          "body": "From a verifier implementation perspective, an unknown `kid` (absent from the available JWKS) means the signature is unverifiable, not that the bot is malicious. Treating unknown keys as grounds for blocking by default can disrupt legitimate traffic during key rotation or JWKS propagation delays. I\u2019d recommend leaving the enforcement decision to the application layer, with fail-open as the default behavior.",
+          "createdAt": "2026-10-18T13:34:49Z",
+          "updatedAt": "2026-10-18T13:34:49Z"
+        }
+      ]
     },
     {
       "number": 143,
