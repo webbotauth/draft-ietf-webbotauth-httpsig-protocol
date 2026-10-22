@@ -502,11 +502,13 @@ first request rather than before it. Later requests verify from cache
 An Origin that expects a signature SHOULD request one from clients that did not
 provide it, using the `Accept-Signature` field defined in
 {{Section 5 of HTTP-MESSAGE-SIGNATURES}}.
-A resulting signature MUST satisfy this profile. The Origin MAY
+If an Agent signs in response, the signature MUST satisfy the requirements in
+{{generating-http-message-signature}}. The Origin MAY
 request additional parameters defined by {{HTTP-MESSAGE-SIGNATURES}}, including
 `nonce`.
 
-Signature requests MUST be consistent with this profile. Agents MAY ignore
+Signature requests MUST be consistent with the requirements in
+{{generating-http-message-signature}}. Agents MAY ignore
 signature requests that do not fit their signing policy, as described in
 {{Section 5.2 of HTTP-MESSAGE-SIGNATURES}}.
 
