@@ -2321,8 +2321,9 @@ needed.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
 <a href="#section-6.5" class="section-number selfRef">6.5. </a><a href="#name-key-reuse-considered-harmfu" class="section-name selfRef">Key Reuse Considered Harmful</a>
         </h3>
 <p id="section-6.5-1">Implementations <span class="bcp14">SHOULD NOT</span> reuse a signing key for different purposes. For
-example, if an agent implementer has two agents they want to differentiate,
-these should use distinct signing keys and signing key directories.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
+example, if an operator wants origins to distinguish between a crawler and user-directed
+agent platform, these <span class="bcp14">SHOULD</span> use distinct <code>Signature-Agent</code> URLs, signing keys, and
+signing key directories.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="reverse-proxy">

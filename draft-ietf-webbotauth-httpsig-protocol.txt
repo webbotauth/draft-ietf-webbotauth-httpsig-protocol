@@ -850,9 +850,10 @@ Table of Contents
 6.5.  Key Reuse Considered Harmful
 
    Implementations SHOULD NOT reuse a signing key for different
-   purposes.  For example, if an agent implementer has two agents they
-   want to differentiate, these should use distinct signing keys and
-   signing key directories.
+   purposes.  For example, if an operator wants origins to distinguish
+   between a crawler and user-directed agent platform, these SHOULD use
+   distinct Signature-Agent URLs, signing keys, and signing key
+   directories.
 
 6.6.  Reverse Proxy Consideration
 
