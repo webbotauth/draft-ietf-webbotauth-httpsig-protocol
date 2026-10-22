@@ -5,8 +5,8 @@
 Web Bot Auth                                                  T. Meunier
 Internet-Draft                                                Cloudflare
 Intended status: Standards Track                                S. Major
-Expires: 24 April 2027                                            Google
-                                                         21 October 2026
+Expires: 25 April 2027                                            Google
+                                                         22 October 2026
 
 
              HTTP Message Signatures for automated traffic
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 April 2027.
+   This Internet-Draft will expire on 25 April 2027.
 
 Copyright Notice
 
@@ -115,10 +115,8 @@ Table of Contents
      6.10. Discovery Failure
      6.11. Unsigned Requests
    7.  Privacy Considerations
-     7.1.  Public Identity
-     7.2.  No Human Correlation
-     7.3.  Minimizing Tracking Risks
-     7.4.  Directory Content and Access Patterns
+     7.1.  Identification and Correlation
+     7.2.  Directory Content and Access Patterns
    8.  IANA Considerations
      8.1.  Well-Known 'http-message-signatures-directory' URI
      8.2.  Media Types
@@ -978,32 +976,19 @@ Table of Contents
 
 7.  Privacy Considerations
 
-7.1.  Public Identity
+7.1.  Identification and Correlation
 
-   This protocol assumes that automated clients identify themselves
-   explicitly using digital signatures.  The identity associated with a
-   signing key is expected to be publicly discoverable for verification
-   purposes.  This reduces anonymity and allows receivers to associate
-   requests with specific agents.  If an agent wishes not to identify
-   itself, this is not the right choice of protocol for it.
+   This protocol enables receivers to recognise requests that carry the
+   same identifier and to correlate them, including across origins.  Key
+   rotation does not prevent this correlation when the identifier
+   remains unchanged (Section 4.2).  This protocol is unsuitable for
+   agents that need to avoid such identification.
 
-7.2.  No Human Correlation
+   Agents whose identifier would be associated with an individual human,
+   rather than a service or role, expose that person to the same
+   correlation.  This protocol is not suited to such deployments.
 
-   A key tied to a specific human individual exposes personally
-   identifiable information and makes the key usable for user tracking
-   or profiling.  A key that represents a role, company, or automation
-   identity (e.g., "news-aggregator-bot", "example-crawler-v1") avoids
-   this.
-
-7.3.  Minimizing Tracking Risks
-
-   To limit tracking risks, implementations SHOULD avoid long-lived,
-   globally unique key identifiers unless strictly necessary.  Key
-   rotation SHOULD be supported, and clients SHOULD take care to avoid
-   signing information that could be used to correlate activity across
-   contexts, especially where sensitive user data is involved.
-
-7.4.  Directory Content and Access Patterns
+7.2.  Directory Content and Access Patterns
 
    A key directory should only contain keys actively used for signing.
    Additional keys or metadata expose more about the signing service

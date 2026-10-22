@@ -1052,7 +1052,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Meunier &amp; Major</td>
-<td class="center">Expires 24 April 2027</td>
+<td class="center">Expires 25 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1065,12 @@ svg {
 <dd class="internet-draft">draft-ietf-webbotauth-httpsig-protocol-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-10-21" class="published">21 October 2026</time>
+<time datetime="2026-10-22" class="published">22 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-04-24">24 April 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-25">25 April 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1130,7 +1130,7 @@ directory is served.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 24 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 25 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1297,16 +1297,10 @@ directory is served.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-public-identity" class="internal xref">Public Identity</a></p>
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-identification-and-correlat" class="internal xref">Identification and Correlation</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-no-human-correlation" class="internal xref">No Human Correlation</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
-                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-minimizing-tracking-risks" class="internal xref">Minimizing Tracking Risks</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
-                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-directory-content-and-acces" class="internal xref">Directory Content and Access Patterns</a></p>
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-directory-content-and-acces" class="internal xref">Directory Content and Access Patterns</a></p>
 </li>
             </ul>
 </li>
@@ -2482,52 +2476,31 @@ to treat unsigned requests differently nor gives it grounds to.<a href="#section
       <h2 id="name-privacy-considerations">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<div id="public-identity">
+<div id="identification-and-correlation">
 <section id="section-7.1">
-        <h3 id="name-public-identity">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-public-identity" class="section-name selfRef">Public Identity</a>
+        <h3 id="name-identification-and-correlat">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-identification-and-correlat" class="section-name selfRef">Identification and Correlation</a>
         </h3>
-<p id="section-7.1-1">This protocol assumes that automated clients identify themselves
-explicitly using digital signatures. The identity associated with a signing
-key is expected to be publicly discoverable for verification purposes. This
-reduces anonymity and allows receivers to associate requests with specific
-agents. If an agent wishes not to identify itself, this is not the right
-choice of protocol for it.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="no-human-correlation">
-<section id="section-7.2">
-        <h3 id="name-no-human-correlation">
-<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-no-human-correlation" class="section-name selfRef">No Human Correlation</a>
-        </h3>
-<p id="section-7.2-1">A key tied to a specific human individual exposes personally identifiable
-information and makes the key usable for user tracking or profiling. A key that
-represents a role, company, or automation identity (e.g., "news-aggregator-bot",
-"example-crawler-v1") avoids this.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="minimizing-tracking-risks">
-<section id="section-7.3">
-        <h3 id="name-minimizing-tracking-risks">
-<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-minimizing-tracking-risks" class="section-name selfRef">Minimizing Tracking Risks</a>
-        </h3>
-<p id="section-7.3-1">To limit tracking risks, implementations <span class="bcp14">SHOULD</span> avoid long-lived, globally
-unique key identifiers unless strictly necessary. Key rotation <span class="bcp14">SHOULD</span> be
-supported, and clients <span class="bcp14">SHOULD</span> take care to avoid signing information that
-could be used to correlate activity across contexts, especially where
-sensitive user data is involved.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">This protocol enables receivers to recognise requests that carry the same
+identifier and to correlate them, including across origins. Key rotation does
+not prevent this correlation when the identifier remains unchanged
+(<a href="#rotation" class="auto internal xref">Section 4.2</a>). This protocol is unsuitable for agents that need to avoid such
+identification.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">Agents whose identifier would be associated with an individual human, rather
+than a service or role, expose that person to the same correlation. This
+protocol is not suited to such deployments.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="directory-content-and-access-patterns">
-<section id="section-7.4">
+<section id="section-7.2">
         <h3 id="name-directory-content-and-acces">
-<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-directory-content-and-acces" class="section-name selfRef">Directory Content and Access Patterns</a>
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-directory-content-and-acces" class="section-name selfRef">Directory Content and Access Patterns</a>
         </h3>
-<p id="section-7.4-1">A key directory should only contain keys actively used for signing. Additional
+<p id="section-7.2-1">A key directory should only contain keys actively used for signing. Additional
 keys or metadata expose more about the signing service than verification
 requires. Verifiers fetching a directory also reveal something about their
 verification patterns, so directory servers should avoid logging personally
-identifiable information from directory requests.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+identifiable information from directory requests.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
