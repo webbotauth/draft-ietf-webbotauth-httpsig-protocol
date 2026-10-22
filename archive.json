@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-20T03:52:10.054714+00:00",
+  "timestamp": "2026-10-22T03:42:07.617866+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2593,7 +2593,7 @@
       ],
       "body": "Raised on the [mailing](https://mailarchive.ietf.org/arch/msg/web-bot-auth/UgZUzO6wFX1WSDQbIJ3cwHePr8M/)\n\nThe current draft uses `tag=\"web-bot-auth\"` within HTTP Message Signature for client and servers to identify the usage of web bot auth usage.\n\nThere are no namespace for `tag`. This means that there might be another draft which would rely on web-bot-auth tag down the line, without a clear way to manage conflict resolution.\n\n@mnot proposes four path forward\n1) Carve out a standards-managed space inside \"tag\" (messy)\n2) Create an extension attribute that is reserved for standards use (\"registered-tag\"?)\n3) Define a different header field set with identical syntax and processing (e.g., WBA-Signature)\n4) Create an extension attribute that is \"webbotauth\"",
       "createdAt": "2026-10-13T20:32:54Z",
-      "updatedAt": "2026-10-16T18:21:49Z",
+      "updatedAt": "2026-10-21T23:57:20Z",
       "closedAt": null,
       "comments": [
         {
@@ -2602,6 +2602,13 @@
           "body": "As a comment: I don't think we should go with 2. I like 1. 3 seems aligned with HTTP usage, even though I feel it's a bit overkill",
           "createdAt": "2026-10-13T23:34:48Z",
           "updatedAt": "2026-10-13T23:34:48Z"
+        },
+        {
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "body": "I agree, Thibault!\n* 2 is like 1 but registered, then why not just create a registry for 1?\n* 3 is basically forking the `Signature` for a specific usecase, I don't like that\n* 4 seems ok at first but HTTP sig might end up with a lot of usecase-specifying parameters like this, so why not just use `tag` then? The [HTTP Signature Metadata Parameters registry](https://www.iana.org/assignments/http-message-signature) is currently a short list of protocol-specific params, it would be odd to me if it would be flooded with booleans signifying what the given signature is used for. It would also open the question of what happens if multiple such params are present?\n\nAlso, per RFC 9421, `tag` is \"An application-specific tag for the signature as a String value. This value is used by applications to help identify signatures relevant for specific applications or protocols.\" \u2013 this seems to be what we're doing here.\nSo I'm leaning towards 0 (status quo), or 1 (creating a registry for tag)\n\nLet's ask the owners of RFC 9421 to see if they have preferences or other alternatives.",
+          "createdAt": "2026-10-21T23:56:28Z",
+          "updatedAt": "2026-10-21T23:57:20Z"
         }
       ]
     },
@@ -7044,7 +7051,7 @@
       ],
       "body": "Addresses feedback from @mnot on the [mailing list](https://mailarchive.ietf.org/arch/msg/web-bot-auth/fDM_deEVKXJLjgbM83YKAgFfEfc/)\n\n@sandormajor for review",
       "createdAt": "2026-10-12T23:10:12Z",
-      "updatedAt": "2026-10-14T23:50:48Z",
+      "updatedAt": "2026-10-22T00:22:22Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "be12662f3c5cc97e10e65a37355bdb33ba0d2fc4",
@@ -7169,6 +7176,44 @@
               "updatedAt": "2026-10-14T23:50:48Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABTj6faQ",
+          "commit": {
+            "abbreviatedOid": "191e329"
+          },
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-22T00:02:40Z",
+          "updatedAt": "2026-10-22T00:22:22Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "nit: it's not immediately clear what \"this profile\" refers to, RFC 9421 also doesn't use the term \"profile.\n\nMaybe something like \"A resulting signature MUST cover the requested components\", or something along those lines?",
+              "createdAt": "2026-10-22T00:02:40Z",
+              "updatedAt": "2026-10-22T00:22:22Z"
+            },
+            {
+              "originalPosition": 10,
+              "body": "Also note that RFC 9421 says \"The receiver of an Accept-Signature field MAY ignore any signature request that does not fit application parameters\" \u2013 so maybe a MUST is too strong here?",
+              "createdAt": "2026-10-22T00:09:22Z",
+              "updatedAt": "2026-10-22T00:22:22Z"
+            },
+            {
+              "originalPosition": 15,
+              "body": "Same here: which profile?",
+              "createdAt": "2026-10-22T00:10:33Z",
+              "updatedAt": "2026-10-22T00:22:22Z"
+            },
+            {
+              "originalPosition": 59,
+              "body": "Related to this (and we might have talked about it earlier, Thibault), it would be great to have a mechanism to signal the client that they can stop signing. We heard of implementers who only care about the first request to be signed, then they use other mechanisms to identify the client. In this case it would be great if the client could stop signing.",
+              "createdAt": "2026-10-22T00:22:16Z",
+              "updatedAt": "2026-10-22T00:22:22Z"
+            }
+          ]
         }
       ]
     },
@@ -7188,7 +7233,7 @@
       ],
       "body": "This updates the text by making it clear it allows for correlation, including possible continuity across key rotation. While at it, updates the no human correlation guidance from #114 to describe the privacy risk more plainly.\n\nOverall, it allows to remove quite soe text that was convoluted.\n\nCloses #115 #114\n\n@sandormajor",
       "createdAt": "2026-10-13T21:42:07Z",
-      "updatedAt": "2026-10-13T21:42:07Z",
+      "updatedAt": "2026-10-22T03:41:41Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "be12662f3c5cc97e10e65a37355bdb33ba0d2fc4",
@@ -7199,15 +7244,57 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "body": "LGTM but let's see if @martinthomson agrees. Maybe we could even compress the two paragraphs into one.",
+          "createdAt": "2026-10-21T21:28:06Z",
+          "updatedAt": "2026-10-21T21:28:06Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "will be on the list as well",
+          "createdAt": "2026-10-21T22:06:58Z",
+          "updatedAt": "2026-10-21T22:06:58Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABTiueSA",
+          "commit": {
+            "abbreviatedOid": "4c8fd4c"
+          },
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-21T21:26:31Z",
+          "updatedAt": "2026-10-21T21:26:31Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABTlJ5WQ",
+          "commit": {
+            "abbreviatedOid": "4c8fd4c"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "LGTM, thanks.  (Note: lots of noise on GitHub lately, but I do try to find at-mentions; flag me if you think I'm being too slow.)",
+          "createdAt": "2026-10-22T03:41:41Z",
+          "updatedAt": "2026-10-22T03:41:41Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 147,
       "id": "PR_kwDOOXJyWM8AAAABIdIxew",
       "title": "Clarify verifier outcomes for newly encountered agents",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/147",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thibmeu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -7218,19 +7305,43 @@
       ],
       "body": "Apply issue #143\n\nfyi @kjames2001\n\n@sandormajor",
       "createdAt": "2026-10-14T18:14:20Z",
-      "updatedAt": "2026-10-14T18:28:24Z",
+      "updatedAt": "2026-10-21T22:06:25Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "be12662f3c5cc97e10e65a37355bdb33ba0d2fc4",
       "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "clarify-verifier-outcomes-143",
       "headRefOid": "7045cc0fab5ce3cace41ca377dc23293c5f28269",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "closedAt": "2026-10-21T22:06:21Z",
+      "mergedAt": "2026-10-21T22:06:20Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "ce2a0e17be966614602aa7af0c2d2d1ddbfdf745"
+      },
+      "comments": [
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "bizarre that 143 returns 404. the text is ok anyway",
+          "createdAt": "2026-10-21T22:06:16Z",
+          "updatedAt": "2026-10-21T22:06:16Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABTimuOw",
+          "commit": {
+            "abbreviatedOid": "7045cc0"
+          },
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "Issue https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/143 returns 404 but the change looks good, thank you",
+          "createdAt": "2026-10-21T21:14:54Z",
+          "updatedAt": "2026-10-21T21:14:54Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
