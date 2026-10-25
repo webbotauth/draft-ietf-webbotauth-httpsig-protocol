@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-22T03:42:07.617866+00:00",
+  "timestamp": "2026-10-25T03:38:54.782129+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2218,7 +2218,7 @@
       "id": "I_kwDOOXJyWM8AAAABLxrmbw",
       "title": "Tracking text is backwards",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/115",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "NONE",
       "assignees": [],
@@ -2227,8 +2227,8 @@
       ],
       "body": "> To limit tracking risks, implementations SHOULD avoid long-lived, globally unique key identifiers unless strictly necessary. Key rotation SHOULD be supported, and clients SHOULD take care to avoid signing information that could be used to correlate activity across contexts, especially where sensitive user data is involved.\n\n-- https://datatracker.ietf.org/doc/html/draft-meunier-webbotauth-httpsig-protocol-01#section-7.3-1\n\nThe thing is, the entire point of this mechanism is to provide a consistent, long-lived, globally-unique identifier for the client.  So this text is a bit weird.\n\nObviously, a single client can assume multiple identities over time, according to its own needs, which is maybe something you can directly acknowledge (or not, because people can work that out for themselves).  Other than that, just make it clear that the reason to use this mechanism is to enable tracking of requests in a verifiable way.  Clients / Agents choose to do that because they believe that it might allow them to build (or build upon) a positive reputation with servers.  And because they consider the value of that reputation to exceed the value of any privacy they might get from not being traceable in that way. That framing should be in the introduction, not Section 7.3, of course.",
       "createdAt": "2026-08-06T22:54:52Z",
-      "updatedAt": "2026-10-13T04:10:12Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-22T18:09:42Z",
+      "closedAt": "2026-10-22T18:09:42Z",
       "comments": [
         {
           "author": "thibmeu",
@@ -2236,13 +2236,6 @@
           "body": "The mechanism is indeed intended to provide such capabilities for client that want them. Key rotation is more of a security consideration (and is mentioned in 5.5.2) than an actual privacy consideration.\n\nThe privacy consideration with regards to tracking is more a matter of #114 I believe.",
           "createdAt": "2026-08-07T09:25:29Z",
           "updatedAt": "2026-08-07T09:25:29Z"
-        },
-        {
-          "author": "kjames2001",
-          "authorAssociation": "NONE",
-          "body": "A data point from a deployment that runs into this. At Auth Your Agent we host one directory per user's agent (`https://<label>.agents.authyouragent.com/.well-known/http-message-signatures-directory`), because sites want to act on one person's agent rather than on everyone behind a service. That is the case 7.2 warns about: the key follows one person's agent to every site, so sites that compare logs can link that person's activity. Our setup has that problem today.\n\nI agree with Martin that the draft should say plainly that the mechanism is for being recognised, and say it up front. If it does, it would help to say what a deployment that signs for individual people should do, not only that it shouldn't use one key everywhere. The option I can see is a key per agent per origin: a site can still act on one user's agent, but sites can't join their logs, at the cost of many more directories. Is that in scope here, or for a later operational document? I asked the same on the list: https://mailarchive.ietf.org/arch/msg/web-bot-auth/py8ya2GlxJ4795L5z-seO64DneA/\n",
-          "createdAt": "2026-10-13T04:10:12Z",
-          "updatedAt": "2026-10-13T04:10:12Z"
         }
       ]
     },
@@ -2627,6 +2620,24 @@
       "body": "Per [RFC 9421 Section 5.1](https://datatracker.ietf.org/doc/html/rfc9421#section-5.1-4)\n> The list of component identifiers indicates the exact set of component identifiers to be included in the requested signature, including all applicable component parameters\n\nAs I understand, and that the [mailing list discussion](https://mailarchive.ietf.org/arch/msg/web-bot-auth/UgZUzO6wFX1WSDQbIJ3cwHePr8M/) between @martinthomson and @mnot suggests, this means that a client receiving an `Accept-Signature` MUST cover the exact set of components.\n\nWith web bot auth, we might want to have the ability to propose a minimal set of components. This way, an origin could send\n\n```\nMinimal-Accept-Signature: (\"@authority\" \"signature-agent\");tag=\"web-bot-auth\"\n```\n\nAnd the client would understand that they have to cover AT LEAST this set of parameters.\n\nThe other alternative if we go with a `tag` registry suggested in #144 is to NOT offer the server a way to request more parameters, let that be privately negotiated and at the client's initiative\n\nRelates to #144",
       "createdAt": "2026-10-13T20:46:26Z",
       "updatedAt": "2026-10-13T23:34:03Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 148,
+      "id": "I_kwDOOXJyWM8AAAABZL4vNw",
+      "title": "Devise a mechanism for client to signal to client that no signature is expected",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/148",
+      "state": "OPEN",
+      "author": "thibmeu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "question"
+      ],
+      "body": "@sandormajor raised in https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/141#discussion_r4343331471 that certain client policy may be to always sign, and stop when the origin does not need it anymore. They'd like a signal from origins that this would not disrupt traffic.\n\nOne way could be to infer it: stop signing and see what happen. Another approach is for origin to signal this.\n\nThis would be a new mechanism. It may even be its own draft.",
+      "createdAt": "2026-10-22T18:26:51Z",
+      "updatedAt": "2026-10-22T18:26:51Z",
       "closedAt": null,
       "comments": []
     }
@@ -6707,21 +6718,21 @@
       "id": "PR_kwDOOXJyWM8AAAABA63eOg",
       "title": "Separate the possession proof from the domain binding in Appendix B",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/131",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "shivdeep1",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Follows the discussion on #100 and the current list thread on Appendix B scope. Text only, no mechanism change.\n\n## What this fixes\n\nAppendix B holds two properties that behave differently. The **domain binding** is genuinely `directory`-only, because the well-known URI is reserved and an arbitrary path is not. The **possession proof** in B.1 is not: it covers `@authority` and `content-digest` and works on any response that serves key material.\n\nThe appendix opens with \"It applies to the `directory` type\", which is correct for the binding and reads as covering the proof too.\n\nSection 5.5 already draws the distinction this PR carries into the appendix:\n\n> TLS authenticates the host but not the path, and nothing reserves the `jwks_uri` or `cimd` path to the host's operator. The well-known URI is reserved, so `directory` additionally names a domain.\n\nSo this is a consistency fix rather than a new proposal.\n\n## Why the reading matters\n\nUnder the narrow reading a `jwks_uri` or `cimd` operator cannot produce a conformant proof, since `tag` is pinned to `http-message-signatures-directory`. Two consequences follow:\n\n- 5.5.3 will not attribute redistributed key material to their URL, so the identifier falls back to the thumbprint of 4.3, which does not survive rotation.\n- Joshua Ashcroft noted on the list that Cloudflare's documentation instructs signing the directory response with one signature per key. If that artifact is required to enrol, operators on `jwks_uri` cannot produce it. I have not tested whether enrolment rejects an unsigned directory, so that is his report rather than a verified claim.\n\nThe second matters more in practice. Wenchong Dong's measurement of 11 August found no origin fetched a published directory across 294,898 signed requests, and concluded that \"an allowlist is an enrolment gate under another name\". If enrolment is the gate that decides who can usefully sign, an operator who cannot produce the artifact it asks for is excluded structurally rather than by choice.\n\n## Evidence that the broad reading was intended\n\n- #98 (merged 19 June): \"We still strongly suggest that jwks_uri response is signed to bound keys to a domain.\"\n- On #100, @thibmeu wrote that a signature over the requested authority \"applies both to the delegated and same-origin\", and \"I would not scope the signing recommendation only to cross-origin/delegated discovery. Would that fit better?\" That question was asked in June and picked up this week.\n- The -01 changelog records \"Move the domain binding to an appendix\". The proof travelled with the binding and inherited a scope written for it.\n\n## Implementer reports\n\nTwo independent implementers said on the list this week that they apply B.1 to `directory` responses only, because that is what the text licenses: @AVAVERIFY (merchant-side verifier, author of the E.2.3 vectors in #121) and Joshua Ashcroft (two production directories). Neither read it as a design decision.\n\n## Changes\n\n1. Scope paragraph: separate the binding from the proof.\n2. Add `{#possession-proof}` so the scope paragraph can reference the section.\n3. `tag`: a sentence saying the value names the mechanism rather than the resource type.\n\n## The `tag`\n\nI opened this as the part I was least sure about. RFC 9421 Section 2.3 defines it as \"An application-specific tag for the signature as a String value. This value is used by applications to help identify signatures relevant for specific applications or protocols.\" That ties the tag to the protocol rather than to the resource being served, so one value across response types is the reading that fits rather than a stretch of what `tag` is for. @AVAVERIFY takes the same position below on interop grounds: two values would imply two validation procedures that do not exist. Still your call if you read it differently.\n\nTwo further notes. The proof stays **MAY** for non-`directory` types, since 5.5 observes those key sets may serve other consumers and mandating signatures over shared key material would be a real burden. And @AVAVERIFY has offered to extend the E.2.3 vectors to cover the proof on a `jwks_uri` response if the separation is adopted, so the type-generic claim would ship with an executable example on each side.\n",
       "createdAt": "2026-08-25T10:09:29Z",
-      "updatedAt": "2026-08-25T21:34:09Z",
+      "updatedAt": "2026-10-22T18:14:51Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "a28dfe8a5b58a7deb6e44cdc98b7e42df2fabf5a",
       "headRepository": "shivdeep1/http-message-signatures-directory",
       "headRefName": "appendix-b-possession-proof-scope",
       "headRefOid": "640c2a2326a670219481f12e689b7affef4a20d7",
-      "closedAt": null,
+      "closedAt": "2026-10-22T18:14:50Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -6739,6 +6750,13 @@
           "body": "Thanks, that settles the tag for me.\n\nRFC 9421 Section 2.3 defines it as \"An application-specific tag for the signature as a String value. This value is used by applications to help identify signatures relevant for specific applications or protocols.\" That ties the tag to the protocol rather than to the resource being served, so one value across response types is the reading that fits rather than a stretch of what `tag` is for. I have updated the PR body and dropped it from the open questions.\n\nOne fix to the body while I was there: the `@nickmathews` I mentioned is an unrelated account. Corrected to @AVAVERIFY, who authored the E.2.3 vectors in #121, so the support above is that implementer rather than a third report.\n",
           "createdAt": "2026-08-25T21:34:09Z",
           "updatedAt": "2026-08-25T21:34:09Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "the draft text has changed a lot. i'm closing this for now. #100 remains open",
+          "createdAt": "2026-10-22T18:14:50Z",
+          "updatedAt": "2026-10-22T18:14:50Z"
         }
       ],
       "reviews": []
@@ -6953,24 +6971,26 @@
       "id": "PR_kwDOOXJyWM8AAAABH_h4sg",
       "title": "Separate crawler and agent signing identities",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/140",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "e271828-",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Clarifies Section 6.5: crawlers with different purposes, and crawlers versus user-directed agent platforms, SHOULD use distinct `Signature-Agent` URLs, signing keys, and key directories.\r\n\r\nCompanion to https://github.com/garyillyes/cbcp/pull/23. Based on consensus from on-list discussions with Akamai and hCaptcha and off-list discussions with others.",
       "createdAt": "2026-10-12T15:11:51Z",
-      "updatedAt": "2026-10-13T21:02:19Z",
+      "updatedAt": "2026-10-22T18:13:44Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "be12662f3c5cc97e10e65a37355bdb33ba0d2fc4",
       "headRepository": "e271828-/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "main",
-      "headRefOid": "a17752cb2d6a1ec10dbdcef51b6d0c4071313644",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "0d86e26141aa90b523fcb95e75e09866698b49d1",
+      "closedAt": "2026-10-22T18:13:44Z",
+      "mergedAt": "2026-10-22T18:13:44Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "b485735d38a4d8ff1f0356fdf1f3b4a1fb934b6e"
+      },
       "comments": [],
       "reviews": [
         {
@@ -6999,7 +7019,7 @@
             "abbreviatedOid": "a17752c"
           },
           "author": "e271828-",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-10-13T01:01:42Z",
@@ -7051,18 +7071,26 @@
       ],
       "body": "Addresses feedback from @mnot on the [mailing list](https://mailarchive.ietf.org/arch/msg/web-bot-auth/fDM_deEVKXJLjgbM83YKAgFfEfc/)\n\n@sandormajor for review",
       "createdAt": "2026-10-12T23:10:12Z",
-      "updatedAt": "2026-10-22T00:22:22Z",
+      "updatedAt": "2026-10-22T18:33:21Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "be12662f3c5cc97e10e65a37355bdb33ba0d2fc4",
       "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "accept-signature-guidance",
-      "headRefOid": "191e329a01a80c2540093e930b2997ddcb9da253",
+      "headRefOid": "d0a4fa1476d2f3af8671a0f7f337b9884ef86541",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@sandormajor your comment should have been addressed in [d0a4fa1](https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/141/commits/d0a4fa1476d2f3af8671a0f7f337b9884ef86541)",
+          "createdAt": "2026-10-22T18:33:21Z",
+          "updatedAt": "2026-10-22T18:33:21Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOOXJyWM8AAAABR7BMlQ",
@@ -7222,7 +7250,7 @@
       "id": "PR_kwDOOXJyWM8AAAABIRLYOQ",
       "title": "Correct tracking text",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/146",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thibmeu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -7233,17 +7261,19 @@
       ],
       "body": "This updates the text by making it clear it allows for correlation, including possible continuity across key rotation. While at it, updates the no human correlation guidance from #114 to describe the privacy risk more plainly.\n\nOverall, it allows to remove quite soe text that was convoluted.\n\nCloses #115 #114\n\n@sandormajor",
       "createdAt": "2026-10-13T21:42:07Z",
-      "updatedAt": "2026-10-22T03:41:41Z",
+      "updatedAt": "2026-10-22T18:09:41Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "be12662f3c5cc97e10e65a37355bdb33ba0d2fc4",
       "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "clarify-request-tracking-115",
       "headRefOid": "4c8fd4ca6c4bb0972b95c8892cfa9d65ec55a8c9",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-10-22T18:09:41Z",
+      "mergedAt": "2026-10-22T18:09:40Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "e62a859045dbf4393614fa8c043ae9078def0868"
+      },
       "comments": [
         {
           "author": "sandormajor",
