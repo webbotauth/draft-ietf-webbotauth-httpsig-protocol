@@ -5,8 +5,8 @@
 Web Bot Auth                                                  T. Meunier
 Internet-Draft                                                Cloudflare
 Intended status: Standards Track                                S. Major
-Expires: 30 April 2027                                            Google
-                                                         27 October 2026
+Expires: 1 May 2027                                               Google
+                                                         28 October 2026
 
 
              HTTP Message Signatures for automated traffic
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 April 2027.
+   This Internet-Draft will expire on 1 May 2027.
 
 Copyright Notice
 
@@ -1170,9 +1170,9 @@ Table of Contents
 
    [REGISTRY] Guerreiro, M., Kirazci, U., and T. Meunier, "Registry and
               Signature Agent card for Web bot auth", Work in Progress,
-              Internet-Draft, draft-meunier-webbotauth-registry-03, 26
-              June 2026, <https://datatracker.ietf.org/doc/html/draft-
-              meunier-webbotauth-registry-03>.
+              Internet-Draft, draft-meunier-webbotauth-registry-04, 27
+              October 2026, <https://datatracker.ietf.org/doc/html/
+              draft-meunier-webbotauth-registry-04>.
 
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
@@ -1815,9 +1815,18 @@ Changelog
 
    draft-ietf-webbotauth-httpsig-protocol-01
 
-   *  Make every Signature-Agent value a direct JWK Set URI and prohibit
-      member parameters.  Remove the directory, jwks_uri, and cimd
-      discovery types.
+   *  Make every Signature-Agent value a direct JWK Set URI.  Remove the
+      directory, jwks_uri, and cimd types.
+
+   *  Recommend that an Origin expecting a signature request one with
+      Accept-Signature.  Describe signing only on request.
+
+   *  Separate the JWK alg from the signature alg.
+
+   *  Use distinct Signature-Agent URLs for a crawler and a user-
+      directed agent.
+
+   *  State that identifiers allow correlation across origins.
 
    draft-meunier-webbotauth-httpsig-protocol-02
 
