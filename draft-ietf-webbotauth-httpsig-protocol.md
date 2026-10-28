@@ -1569,8 +1569,13 @@ Martin Thomson.
 
 draft-ietf-webbotauth-httpsig-protocol-01
 
-- Make every `Signature-Agent` value a direct JWK Set URI and prohibit member
-  parameters. Remove the `directory`, `jwks_uri`, and `cimd` discovery types.
+- Make every `Signature-Agent` value a direct JWK Set URI. Remove the
+  `directory`, `jwks_uri`, and `cimd` types.
+- Recommend that an Origin expecting a signature request one with
+  `Accept-Signature`. Describe signing only on request.
+- Separate the JWK `alg` from the signature `alg`.
+- Use distinct `Signature-Agent` URLs for a crawler and a user-directed agent.
+- State that identifiers allow correlation across origins.
 
 draft-meunier-webbotauth-httpsig-protocol-02
 
