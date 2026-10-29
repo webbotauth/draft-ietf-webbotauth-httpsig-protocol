@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-25T03:38:54.782129+00:00",
+  "timestamp": "2026-10-29T04:47:53.397383+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -1969,15 +1969,15 @@
       "id": "I_kwDOOXJyWM8AAAABLxnMmQ",
       "title": "Key format",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/109",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Pick *one* please.  The idea that you might have multiple key formats in order to support different use cases is cute, but it doesn't foster interoperability.  The lessons of the Tower of Babel apply.  The JWKS format seems tolerable.",
       "createdAt": "2026-08-06T22:38:10Z",
-      "updatedAt": "2026-08-19T04:42:56Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-28T08:33:31Z",
+      "closedAt": "2026-10-28T08:33:31Z",
       "comments": [
         {
           "author": "thibmeu",
@@ -2020,6 +2020,13 @@
           "body": "Verifier implementer input, from re-pinning to -02 today: support for\nJWKS-only as the single format. Two notes from deployed reality. First,\nalg: our parser accepts alg-absent, the registry form (ed25519), and the\nJOSE names case-insensitively, because all three occur in the wild; per\nJoshua's WebCrypto finding, guidance to omit alg (the algorithm already\nrides in Signature-Input) seems right, with verifier tolerance for the\nJOSE names. Second, at least one production directory (shopify.com) serves\na bare JWK rather than a JWK Set today, so a JWKS-only rule would benefit\nfrom one migration sentence telling verifiers whether to tolerate or\nreject the bare form during transition. We currently normalize it and\nrecord the divergence.",
           "createdAt": "2026-08-19T04:42:56Z",
           "updatedAt": "2026-08-19T04:42:56Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closing this issue as it's been addressed by #132 which limits the draft to one key format. CIMD has been moved to the [registry draft](https://datatracker.ietf.org/doc/draft-meunier-webbotauth-registry/) which uses it.",
+          "createdAt": "2026-10-28T08:33:31Z",
+          "updatedAt": "2026-10-28T08:33:31Z"
         }
       ]
     },
@@ -2159,15 +2166,15 @@
       "id": "I_kwDOOXJyWM8AAAABLxqZZA",
       "title": "Binding to humans",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/114",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "> The key used for signing MUST NOT be tied to a specific human individual. \n\n-- https://datatracker.ietf.org/doc/html/draft-meunier-webbotauth-httpsig-protocol-01#section-7.2-1\n\nThis seems like it might be impossible to enforce.  It's probably better not to say anything at all.",
       "createdAt": "2026-08-06T22:50:20Z",
-      "updatedAt": "2026-08-19T05:55:30Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-28T08:35:14Z",
+      "closedAt": "2026-10-28T08:35:14Z",
       "comments": [
         {
           "author": "thibmeu",
@@ -2210,6 +2217,13 @@
           "body": "Noted. In my mind that would be in #115, but this indeed impacts the guidance set into this ticket (which could be removed with a more direct wording around tracking)",
           "createdAt": "2026-08-19T05:55:30Z",
           "updatedAt": "2026-08-19T05:55:30Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Tracking text has been updated with #146 and does not have a direct reference to humans anymore. I think that closes this issue.",
+          "createdAt": "2026-10-28T08:35:14Z",
+          "updatedAt": "2026-10-28T08:35:14Z"
         }
       ]
     },
@@ -2362,15 +2376,15 @@
       "id": "I_kwDOOXJyWM8AAAABNUnZoQ",
       "title": "5.2.1 label-keying MUST vs the Appendix E vectors, and whether 5.2.2 already carries the property",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/128",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "AVAVERIFY",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Implementing -02 in our merchant-side verifier surfaced a conflict Joshua\nAshcroft's implementer's report also touches (his finding 1): 5.2.1\nrequires the Signature-Agent member keyed to the signature label to be\ncovered, but E.1.1 and E.2.1 label the signature sig2 while keying the\nmember agent2. A strict 5.2.1 reading rejects the document's own vectors.\n\nTwo possible fixes, and they differ in reach. Re-keying the vector members\nto their signature labels closes the fixture inconsistency. But it may be\nworth asking whether 5.2.1's label-matching requirement is itself stronger\nthan needed: 5.2.2 already requires resolving the member the signature\nactually covers, which is the security-relevant property, and matching the\nlabel on top of that adds bookkeeping without adding security. Our verifier\nimplements the 5.2.2 rule (attribute to the covered member, whatever its\nkey), passes both the E.2.1 request vector and the E.2.3 directory vector\nthat way, and we have documented it as a retained deviation from a strict\n5.2.1 reading.\n\nHappy to PR either direction once the intended rule is settled.",
       "createdAt": "2026-08-19T04:44:03Z",
-      "updatedAt": "2026-09-24T14:03:16Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-28T08:35:45Z",
+      "closedAt": "2026-10-28T08:35:44Z",
       "comments": [
         {
           "author": "FearmessOp",
@@ -2385,6 +2399,13 @@
           "body": "One correction to my own text above, since #135 has now reported the same E.2.1 finding and it would be easy to quote the wrong sentence. I wrote that our verifier \"passes both the E.2.1 request vector and the E.2.3 directory vector that way.\" E.2.3 is the signed directory response: a response signature under the label `binding` covering `@authority` and `content-digest`, with no `Signature-Agent` member, so the 5.2.1 keying rule does not apply to it at all. We verify E.2.3, but it says nothing about this question. Only E.2.1 does.\n\nOn the substance, #135 adds the option I should have named: renaming the label `sig2` to `agent2` in `Signature-Input` and `Signature` leaves the published base and signature bytes valid, because the label is not in the signature base. That is the smallest change to the vectors. Paired with stating the 5.2.2 rule (attribute to the member the signature actually covers) as the intended one in -01, both implementations here would converge without regenerating anything. The PR offer stands for either direction.",
           "createdAt": "2026-09-24T14:03:16Z",
           "updatedAt": "2026-09-24T14:03:16Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "done in #138 ",
+          "createdAt": "2026-10-28T08:35:45Z",
+          "updatedAt": "2026-10-28T08:35:45Z"
         }
       ]
     },
@@ -2586,7 +2607,7 @@
       ],
       "body": "Raised on the [mailing](https://mailarchive.ietf.org/arch/msg/web-bot-auth/UgZUzO6wFX1WSDQbIJ3cwHePr8M/)\n\nThe current draft uses `tag=\"web-bot-auth\"` within HTTP Message Signature for client and servers to identify the usage of web bot auth usage.\n\nThere are no namespace for `tag`. This means that there might be another draft which would rely on web-bot-auth tag down the line, without a clear way to manage conflict resolution.\n\n@mnot proposes four path forward\n1) Carve out a standards-managed space inside \"tag\" (messy)\n2) Create an extension attribute that is reserved for standards use (\"registered-tag\"?)\n3) Define a different header field set with identical syntax and processing (e.g., WBA-Signature)\n4) Create an extension attribute that is \"webbotauth\"",
       "createdAt": "2026-10-13T20:32:54Z",
-      "updatedAt": "2026-10-21T23:57:20Z",
+      "updatedAt": "2026-10-27T10:01:31Z",
       "closedAt": null,
       "comments": [
         {
@@ -2602,6 +2623,13 @@
           "body": "I agree, Thibault!\n* 2 is like 1 but registered, then why not just create a registry for 1?\n* 3 is basically forking the `Signature` for a specific usecase, I don't like that\n* 4 seems ok at first but HTTP sig might end up with a lot of usecase-specifying parameters like this, so why not just use `tag` then? The [HTTP Signature Metadata Parameters registry](https://www.iana.org/assignments/http-message-signature) is currently a short list of protocol-specific params, it would be odd to me if it would be flooded with booleans signifying what the given signature is used for. It would also open the question of what happens if multiple such params are present?\n\nAlso, per RFC 9421, `tag` is \"An application-specific tag for the signature as a String value. This value is used by applications to help identify signatures relevant for specific applications or protocols.\" \u2013 this seems to be what we're doing here.\nSo I'm leaning towards 0 (status quo), or 1 (creating a registry for tag)\n\nLet's ask the owners of RFC 9421 to see if they have preferences or other alternatives.",
           "createdAt": "2026-10-21T23:56:28Z",
           "updatedAt": "2026-10-21T23:57:20Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I believe that'd be both a question for the IANA registry expert for [HTTP Signature Message Parameters](https://www.iana.org/assignments/http-message-signature#signature-metadata-parameters), the HTTP directorate, and the WG.\n\nSo a good discussion point overall, for the mailing, and our next meeting.",
+          "createdAt": "2026-10-27T10:01:31Z",
+          "updatedAt": "2026-10-27T10:01:31Z"
         }
       ]
     },
@@ -7060,7 +7088,7 @@
       "id": "PR_kwDOOXJyWM8AAAABIEB_NA",
       "title": "Clarify signature requests and conditional signing",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/141",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thibmeu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -7071,17 +7099,19 @@
       ],
       "body": "Addresses feedback from @mnot on the [mailing list](https://mailarchive.ietf.org/arch/msg/web-bot-auth/fDM_deEVKXJLjgbM83YKAgFfEfc/)\n\n@sandormajor for review",
       "createdAt": "2026-10-12T23:10:12Z",
-      "updatedAt": "2026-10-22T18:33:21Z",
+      "updatedAt": "2026-10-27T09:58:53Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "be12662f3c5cc97e10e65a37355bdb33ba0d2fc4",
       "headRepository": "thibmeu/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "accept-signature-guidance",
       "headRefOid": "d0a4fa1476d2f3af8671a0f7f337b9884ef86541",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-10-27T09:58:47Z",
+      "mergedAt": "2026-10-27T09:58:47Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "f22085eafa9e60dcc2418153d679bb0841432193"
+      },
       "comments": [
         {
           "author": "thibmeu",
@@ -7089,6 +7119,13 @@
           "body": "@sandormajor your comment should have been addressed in [d0a4fa1](https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/141/commits/d0a4fa1476d2f3af8671a0f7f337b9884ef86541)",
           "createdAt": "2026-10-22T18:33:21Z",
           "updatedAt": "2026-10-22T18:33:21Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "merging as is, so that we have a draft before the cut off. some issues have been openned to track remaining discussion",
+          "createdAt": "2026-10-27T09:58:40Z",
+          "updatedAt": "2026-10-27T09:58:40Z"
         }
       ],
       "reviews": [
