@@ -465,7 +465,7 @@ Signature-Input: sig=("@authority" "signature-agent";key="sig");\
                  expires=1700011111;\
                  keyid="ba3e64==";\
                  tag="web-bot-auth"
-Signature-Agent: sig="https://signer.example.com"
+Signature-Agent: sig="https://signer.example.com/.well-known/http-message-signatures-directory"
 ~~~
 
 A signed request carries three headers
@@ -617,7 +617,7 @@ Cache-Control: max-age=86400
   "keys": [{
     "kty": "OKP",
     "crv": "Ed25519",
-    "kid": "NFcWBst6DXG-N35nHdzMrioWntdzNZghQSkjHNMMSjw",
+    "kid": "poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U",
     "x": "JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs",
     "use": "sig",
     "nbf": 1712793600,
@@ -1223,8 +1223,8 @@ NOTE: '\' line wrapping per RFC 8792
 
 GET /resource HTTP/1.1
 Host: origin.example
-Signature-Agent: agent="https://agent.alice.example",\
- browser="https://browser.example"
+Signature-Agent: agent="https://agent.alice.example/.well-known/http-message-signatures-directory",\
+ browser="https://browser.example/.well-known/http-message-signatures-directory"
 Signature-Input: agent=("@method" "@authority" "@path"\
  "signature-agent";key="agent");created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
@@ -1274,7 +1274,7 @@ The corresponding signature base is:
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent";key="sig2": "https://signature-agent.test"
+"signature-agent";key="sig2": "https://signature-agent.test/.well-known/http-message-signatures-directory"
 "@signature-params": ("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
@@ -1289,7 +1289,7 @@ This results in the following Signature-Input and Signature header fields being 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: sig2="https://signature-agent.test"
+Signature-Agent: sig2="https://signature-agent.test/.well-known/http-message-signatures-directory"
 Signature-Input: sig2=("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
@@ -1297,7 +1297,7 @@ Signature-Input: sig2=("@authority" "signature-agent";key="sig2")\
  ;expires=4889289600\
  ;nonce="wcfPQPh7SzkvrIVvhD00vNk9PkxJNY2NVbYl2PVBB4zmUoluSwE7W6bPtF60QA3k8g06FU7PPCD+J58YofY1zg=="\
  ;tag="web-bot-auth"
-Signature: sig2=:iOCCPgZeV5D5KlfZLXIFQOZR2njqFiCMZIrb5HRRLrFZR5Wtpsn7HwbKfWYHqW3dYU7HV/RohjNg7fuyQ1Mdy2J4mya9JnQCZtCcIcOK/LM9Yc6g6ZTw0onurllrzEzuNQIFFkBTgPJZlA3rHioFrmDmn+nnN7HaC+it/PA2iGfENHYq9D3Ud7ZeDICmF1s5bsMgc+y+MxTPFQHxOEyhbCDjZbT5yeSkGP1Czczg7Cpf0Fz/wuF3mJJ7TL1mzQk3PPizXFr/EnjdUWri1/W8M/f93d389BFF+qbkISzAvOHEk5TqOoyrzzotTn3xmYN6SCGTHG42fK4rA4Ei0qCnnA==:
+Signature: sig2=:jMRdrrBdOWS0/YolquRI2N6hw17yiivcPlbZ4MyRaiVgwON2gRzaOfz30sOWJaw6/HUZ04i69GyLz2HanX08B10v3zRuEaHlpcN2Ae7T+mwij8mN9xmfOgLMN6CCnqzyjgHqIkYh4bepJjZLUipUBP1CMBMuvLoTb0G2MHlGAjAZqpAqXy07Ld7fTz+mbOYLaNqEzI4ihEV6R8GZ92dhxrkTgjnrsLS8qSGlv0EB3J6e8kSV6We/At5qRNVB0HWEClLOi3uxKT3QlIDYFeonmzZJW4ousYfKswmUXZfcDrFlNmGUUO8phcmyyTbisaE3begnCUfr30C0QghyBDxuWg==:
 ~~~
 
 ### Legacy Signature-Agent, sf-string {#example-legacy}
@@ -1313,7 +1313,7 @@ The corresponding signature base is:
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent": "https://signature-agent.test"
+"signature-agent": "https://signature-agent.test/.well-known/http-message-signatures-directory"
 "@signature-params": ("@authority" "signature-agent")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
@@ -1328,7 +1328,7 @@ This results in the following Signature-Input and Signature header fields being 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: "https://signature-agent.test"
+Signature-Agent: "https://signature-agent.test/.well-known/http-message-signatures-directory"
 Signature-Input: sig2=("@authority" "signature-agent")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
@@ -1336,7 +1336,7 @@ Signature-Input: sig2=("@authority" "signature-agent")\
  ;expires=1735693200\
  ;nonce="XSHtZVCThSIAksXsH9WBs6AtxtXC0eQGiIcUGSoJstFs8lAWakjhrfwzLhyjtme5iXMZvmFWqDEs6cT3Jf+BbQ=="\
  ;tag="web-bot-auth"
-Signature: sig2=:I1QWNzGXdP1a4dSvOHLCVOOanEYHDk+ZsVxM9MLX/p4ko69ghKwR5EOtAD96g7g4GWP7lmpM/jFAf9q8EFRDTPLjUXySwMv4YPgabv2LQihTJG2y8a2m6IGltyruwQNiqSJVUuRaG9+b17CGmAMFZh30X6GXLdQJrCARpeTqPwp2DC+a8haDE/VE5EruqzjA5/2mKwvrkzkSqeW5tOVtFwWRRHIOidquf/8Je6kM9mhgkg4arudLA5SL4wyyYE1jURIgcOl8agrfdJ5Def23DIRtiOLRa8jT9cpTLFAuFHN+mrZA/LH9h0gSIg1cPb+0cMASee5uku1KjWcFer7jWA==:
+Signature: sig2=:cRCnsJFy/x+mlMB+yvL6UM1OdkrENdi/sFisPmEjRZz+Mgj8ZHXHmh4KtMzJsZI/6TsgIMvLTpc1Enmt75wR33AdG6agfQtbFGntvEHAK2bTabl6+kP1x3+tKs86qbANXHPSw5MxP9462NHJAxjiCuKtqMGIjg3vlk5oj6Hg30wOYhv4ggK3EdHdRxqM7arndwZeSLlT0aU8aiZRoql4MpWUCbN154j9INiVwtb+59M9lt8BVV1ugcKJAowMODnGrs7HbEDHx5gFxebgBduOWCiLmOTG3BegZiSmPRdFr9PuNI1J1S4EMAi2RJYBSr94bLrxlfDBs5kdOSPuWpeNZA==:
 ~~~
 
 ## EdDSA Using Curve edwards25519
@@ -1355,7 +1355,7 @@ The corresponding signature base is:
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent";key="sig2": "https://signature-agent.test"
+"signature-agent";key="sig2": "https://signature-agent.test/.well-known/http-message-signatures-directory"
 "@signature-params": ("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
@@ -1370,7 +1370,7 @@ This results in the following Signature-Input and Signature header fields being 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: sig2="https://signature-agent.test"
+Signature-Agent: sig2="https://signature-agent.test/.well-known/http-message-signatures-directory"
 Signature-Input: sig2=("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
@@ -1378,7 +1378,7 @@ Signature-Input: sig2=("@authority" "signature-agent";key="sig2")\
  ;expires=4889289600\
  ;nonce="n9p433xm+NJ3ph3upfBIGmsuwHw387YV7Q/F+6BSpGCVjYCqQw6rznNA8PVVLySrAWsv0hQtFioQb6E1YsauiA=="\
  ;tag="web-bot-auth"
-Signature: sig2=:CGokAoY/FrPpyuzTe1Fb2kLTAH9Idw6qSFd1+D77r1firsMRCxeuLu5e6O+ek3zQgDMAzjiXtLVfqE00xnABCQ==:
+Signature: sig2=:K/yVRxeBAr93LLpXNu+7VJysBLJzHbx5ei/qkTDFY2qm0ogzJaAWn0p8j/7NoG3VpFpBehIHOGDkczVCm2epDw==:
 ~~~
 
 ### Legacy Signature-Agent, sf-string
@@ -1394,7 +1394,7 @@ The corresponding signature base is:
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent": "https://signature-agent.test"
+"signature-agent": "https://signature-agent.test/.well-known/http-message-signatures-directory"
 "@signature-params": ("@authority" "signature-agent")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
@@ -1409,7 +1409,7 @@ This results in the following Signature-Input and Signature header fields being 
 ~~~
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: "https://signature-agent.test"
+Signature-Agent: "https://signature-agent.test/.well-known/http-message-signatures-directory"
 Signature-Input: sig2=("@authority" "signature-agent")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
@@ -1417,7 +1417,7 @@ Signature-Input: sig2=("@authority" "signature-agent")\
  ;expires=1735693200\
  ;nonce="e8N7S2MFd/qrd6T2R3tdfAuuANngKI7LFtKYI/vowzk4lAZYadIX6wW25MwG7DCT9RUKAJ0qVkU0mEeLElW1qg=="\
  ;tag="web-bot-auth"
-Signature: sig2=:jdq0SqOwHdyHr9+r5jw3iYZH6aNGKijYp/EstF4RQTQdi5N5YYKrD+mCT1HA1nZDsi6nJKuHxUi/5Syp3rLWBA==:
+Signature: sig2=:RgpOdhNGFX7UR38+uNNf79CsAQ/ll8H7FvrSoQyjUHMg0apFVJ691/TZIu4boservbg7ciRcoDnY0XLI4j/AAA==:
 ~~~
 
 ### Signed Directory Response
