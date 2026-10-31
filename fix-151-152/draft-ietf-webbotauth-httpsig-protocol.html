@@ -1986,8 +1986,7 @@ Signature-Input: sig=("@authority" "signature-agent";key="sig");\
                  expires=1700011111;\
                  keyid="ba3e64==";\
                  tag="web-bot-auth"
-Signature-Agent: sig="https://signer.example.com/\
- .well-known/http-message-signatures-directory"
+Signature-Agent: sig="https://signer.example.com/.well-known/http-message-signatures-directory"
 </pre><a href="#section-5.2.5-2" class="pilcrow">¶</a>
 </div>
 <p id="section-5.2.5-3">A signed request carries three headers<a href="#section-5.2.5-3" class="pilcrow">¶</a></p>
@@ -3219,10 +3218,8 @@ NOTE: '\' line wrapping per RFC 8792
 
 GET /resource HTTP/1.1
 Host: origin.example
-Signature-Agent: agent="https://agent.alice.example/\
- .well-known/http-message-signatures-directory",\
- browser="https://browser.example/\
- .well-known/http-message-signatures-directory"
+Signature-Agent: agent="https://agent.alice.example/.well-known/http-message-signatures-directory",\
+ browser="https://browser.example/.well-known/http-message-signatures-directory"
 Signature-Input: agent=("@method" "@authority" "@path"\
  "signature-agent";key="agent");created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
@@ -3281,8 +3278,7 @@ a <code>Signature-Agent</code> header.<a href="#appendix-E.1.1-1" class="pilcrow
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent";key="sig2": "https://signature-agent.test/\
- .well-known/http-message-signatures-directory"
+"signature-agent";key="sig2": "https://signature-agent.test/.well-known/http-message-signatures-directory"
 "@signature-params": ("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
@@ -3297,8 +3293,7 @@ NOTE: '\' line wrapping per RFC 8792
 <pre>
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: sig2="https://signature-agent.test/\
- .well-known/http-message-signatures-directory"
+Signature-Agent: sig2="https://signature-agent.test/.well-known/http-message-signatures-directory"
 Signature-Input: sig2=("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
@@ -3325,8 +3320,7 @@ a <code>Signature-Agent</code> header.<a href="#appendix-E.1.2-2" class="pilcrow
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent": "https://signature-agent.test/\
- .well-known/http-message-signatures-directory"
+"signature-agent": "https://signature-agent.test/.well-known/http-message-signatures-directory"
 "@signature-params": ("@authority" "signature-agent")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
@@ -3341,8 +3335,7 @@ NOTE: '\' line wrapping per RFC 8792
 <pre>
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: "https://signature-agent.test/\
- .well-known/http-message-signatures-directory"
+Signature-Agent: "https://signature-agent.test/.well-known/http-message-signatures-directory"
 Signature-Input: sig2=("@authority" "signature-agent")\
  ;created=1735689600\
  ;keyid="oD0HwocPBSfpNy5W3bpJeyFGY_IQ_YpqxSjQ3Yd-CLA"\
@@ -3377,8 +3370,7 @@ a <code>Signature-Agent</code> header.<a href="#appendix-E.2.1-1" class="pilcrow
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent";key="sig2": "https://signature-agent.test/\
- .well-known/http-message-signatures-directory"
+"signature-agent";key="sig2": "https://signature-agent.test/.well-known/http-message-signatures-directory"
 "@signature-params": ("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
@@ -3393,8 +3385,7 @@ NOTE: '\' line wrapping per RFC 8792
 <pre>
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: sig2="https://signature-agent.test/\
- .well-known/http-message-signatures-directory"
+Signature-Agent: sig2="https://signature-agent.test/.well-known/http-message-signatures-directory"
 Signature-Input: sig2=("@authority" "signature-agent";key="sig2")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
@@ -3421,8 +3412,7 @@ a <code>Signature-Agent</code> header.<a href="#appendix-E.2.2-2" class="pilcrow
 NOTE: '\' line wrapping per RFC 8792
 
 "@authority": example.com
-"signature-agent": "https://signature-agent.test/\
- .well-known/http-message-signatures-directory"
+"signature-agent": "https://signature-agent.test/.well-known/http-message-signatures-directory"
 "@signature-params": ("@authority" "signature-agent")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
@@ -3437,8 +3427,7 @@ NOTE: '\' line wrapping per RFC 8792
 <pre>
 NOTE: '\' line wrapping per RFC 8792
 
-Signature-Agent: "https://signature-agent.test/\
- .well-known/http-message-signatures-directory"
+Signature-Agent: "https://signature-agent.test/.well-known/http-message-signatures-directory"
 Signature-Input: sig2=("@authority" "signature-agent")\
  ;created=1735689600\
  ;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"\
