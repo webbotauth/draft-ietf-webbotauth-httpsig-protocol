@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-29T04:47:53.397383+00:00",
+  "timestamp": "2026-11-01T04:52:36.303920+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2549,7 +2549,7 @@
       ],
       "body": "Origins can reject a signed request without explaining why verification failed. This makes deployment failures harder to diagnose.\n\nConsider using [RFC 9457](https://www.rfc-editor.org/info/rfc9457/) to report signature verification errors. Define which failures to expose and whether shared problem types are needed. This needs to avoid the disclosure of sensitive state.\n\nRaised in [the implementation-report thread](https://mailarchive.ietf.org/arch/msg/web-bot-auth/fDM_deEVKXJLjgbM83YKAgFfEfc/).",
       "createdAt": "2026-10-12T23:12:38Z",
-      "updatedAt": "2026-10-18T13:34:49Z",
+      "updatedAt": "2026-10-31T18:16:08Z",
       "closedAt": null,
       "comments": [
         {
@@ -2558,6 +2558,13 @@
           "body": "From a verifier implementation perspective, an unknown `kid` (absent from the available JWKS) means the signature is unverifiable, not that the bot is malicious. Treating unknown keys as grounds for blocking by default can disrupt legitimate traffic during key rotation or JWKS propagation delays. I\u2019d recommend leaving the enforcement decision to the application layer, with fail-open as the default behavior.",
           "createdAt": "2026-10-18T13:34:49Z",
           "updatedAt": "2026-10-18T13:34:49Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "There is a new individual draft that could be relevant here https://datatracker.ietf.org/doc/html/draft-nottingham-problem-header\n\nIt provides an HTTP header that encodes Problem details. There are a few limitations, but they seems quite reasonable. I have not yet sat to map the errors we envision into that format, but that seems doable",
+          "createdAt": "2026-10-31T18:16:08Z",
+          "updatedAt": "2026-10-31T18:16:08Z"
         }
       ]
     },
@@ -2666,6 +2673,78 @@
       "body": "@sandormajor raised in https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/141#discussion_r4343331471 that certain client policy may be to always sign, and stop when the origin does not need it anymore. They'd like a signal from origins that this would not disrupt traffic.\n\nOne way could be to infer it: stop signing and see what happen. Another approach is for origin to signal this.\n\nThis would be a new mechanism. It may even be its own draft.",
       "createdAt": "2026-10-22T18:26:51Z",
       "updatedAt": "2026-10-22T18:26:51Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 149,
+      "id": "I_kwDOOXJyWM8AAAABbUOM2A",
+      "title": "Directories serving a single JWK where \u00a75.5.1 requires a JWK Set",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/149",
+      "state": "CLOSED",
+      "author": "secondlightdirectories",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "-01 \u00a75.5.1 says the directory resource MUST be a JWK Set. A large deployed directory serves a single JWK instead: `https://www.shopify.com/.well-known/http-message-signatures-directory` returns one JWK object, no `keys` array, with the directory media type (checked 2026-10-30). A verifier that applies the MUST strictly cannot use it; ours treats it as a one-key set.\n\n\u00a75.2.1 already handles the parallel case for `Signature-Agent`: earlier versions sent a bare String, deployments still do, and a verifier MAY accept it. Would the WG want the same for directories, something like \"a verifier MAY treat a single JWK as a JWK Set containing that key\"? Without a sentence either way, conformant verifiers and a deployed directory disagree, and implementers will each pick a reading.\n\nWe raised this on #109 in August; filing it fresh against -01 since that issue is closed.",
+      "createdAt": "2026-10-30T22:44:40Z",
+      "updatedAt": "2026-10-30T22:49:46Z",
+      "closedAt": "2026-10-30T22:49:46Z",
+      "comments": []
+    },
+    {
+      "number": 150,
+      "id": "I_kwDOOXJyWM8AAAABbWfydw",
+      "title": "Directories serving a single JWK where \u00a75.5.1 requires a JWK Set",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/150",
+      "state": "OPEN",
+      "author": "AVAVERIFY",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "-01 \u00a75.5.1 says the directory resource MUST be a JWK Set. A large deployed directory serves a single JWK instead: `https://www.shopify.com/.well-known/http-message-signatures-directory` returns one JWK object, no `keys` array, with the directory media type (checked 2026-10-31). A verifier that applies the MUST strictly cannot use it; ours treats it as a one-key set.\n\n\u00a75.2.1 already handles the parallel case for `Signature-Agent`: earlier versions sent a bare String, deployments still do, and a verifier MAY accept it. Would the WG want the same for directories, something like \"a verifier MAY treat a single JWK as a JWK Set containing that key\"? Without a sentence either way, conformant verifiers and a deployed directory disagree, and implementers will each pick a reading.\n\nWe raised this on #109 in August; filing it fresh against -01 since that issue is closed.",
+      "createdAt": "2026-10-31T03:13:50Z",
+      "updatedAt": "2026-10-31T19:26:39Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I think we should encourage deployments to move to a JWKS, rather than introduce this change in the protocol. This is especially true for a well-known I believe.\n\nOne of the motivation for #109 was to minimise such formats.\n\nI'll leave it open until the next WG meeting at IETF 127, and see if the question comes up.",
+          "createdAt": "2026-10-31T19:26:39Z",
+          "updatedAt": "2026-10-31T19:26:39Z"
+        }
+      ]
+    },
+    {
+      "number": 151,
+      "id": "I_kwDOOXJyWM8AAAABbXCmvQ",
+      "title": "\u00a75.5.1 example directory: `kid` is not the RFC 7638 thumbprint of its key",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/151",
+      "state": "OPEN",
+      "author": "femi-alla",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In `-01` \u00a75.5.1 (and `main` at 8c203c6, line 620) the example directory entry is\n\n    \"kid\": \"NFcWBst6DXG-N35nHdzMrioWntdzNZghQSkjHNMMSjw\",\n    \"x\":   \"JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs\"\n\nThe RFC 7638 thumbprint of that key (SHA-256 over `{\"crv\":\"Ed25519\",\"kty\":\"OKP\",\"x\":\"JrQLj5P_\u2026\"}`) is\n\n    poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U\n\nwhich is the `kid` the same key carries in Appendix E (the signed directory response and every `keyid` in the examples). \u00a75.5 says a `kid`, if present, must be the thumbprint, so the \u00a75.5.1 example contradicts the rule it illustrates.\n\nSuggested fix: replace the \u00a75.5.1 `kid` with `poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U`.",
+      "createdAt": "2026-10-31T04:21:19Z",
+      "updatedAt": "2026-10-31T04:21:19Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 152,
+      "id": "I_kwDOOXJyWM8AAAABbYUcLA",
+      "title": "Most examples still send a bare origin, which \u00a75.5 now fetches as the JWK Set",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/152",
+      "state": "OPEN",
+      "author": "ParallaxGrain",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "-01 \u00a75.5 says \"A verifier fetches that URL directly and interprets the response as a JWK Set\". The only example that follows it is the one in \u00a75.5 itself, `sig1=\"https://signature-agent.test/jwks.json\"`. The others still send a bare origin:\n\n- \u00a75.2.5: `Signature-Agent: sig=\"https://signer.example.com\"`\n- D.2: `agent=\"https://agent.alice.example\", browser=\"https://browser.example\"`\n- E.1.1 and E.2.1: `sig2=\"https://signature-agent.test\"`\n- E.1.2 and E.2.2 (legacy form): `\"https://signature-agent.test\"`\n\nRead with \u00a75.5, each of these points the verifier at the origin itself, while E.2.3 serves the key set at `/.well-known/http-message-signatures-directory` on the same host. A verifier written to -01 cannot get from E.2.1 to the keys in E.2.3, and a verifier that still appends the well-known path passes the vectors. As written, the vectors do not tell the two apart.\n\nSuggested fix: use `https://signature-agent.test/.well-known/http-message-signatures-directory` in the examples, and the same shape for the other hosts. The E vectors cover `signature-agent`, so their signatures change with it.\n\nA related question. The text does not say what a verifier should do with a bare origin it still receives. \u00a75.5 implies fetching the origin's root. Deployed signers and published documentation still use that form: Google's Web Bot Auth page shows `g=\"https://agent.bot.goog\"`, Cloudflare's shows `\"https://signature-agent.test\"`. \u00a75.2.1 has a sentence for the legacy string form. One sentence either way for the bare origin would stop verifiers from each picking their own reading.\n",
+      "createdAt": "2026-10-31T07:28:25Z",
+      "updatedAt": "2026-10-31T07:28:25Z",
       "closedAt": null,
       "comments": []
     }
@@ -7409,6 +7488,36 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 153,
+      "id": "PR_kwDOOXJyWM8AAAABMAiKqw",
+      "title": "Use directory URLs in examples and fix example kid",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/153",
+      "state": "OPEN",
+      "author": "thibmeu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "thibmeu"
+      ],
+      "labels": [
+        "bug"
+      ],
+      "body": "Fixes #151: \u00a75.5.1 example `kid` is now the RFC 7638 thumbprint of its key.\r\nFixes #152: examples point `Signature-Agent` at the directory URL. Appendix E signatures regenerated with the RFC 9421 test keys and verified.\r\n\r\n@sandormajor",
+      "createdAt": "2026-10-31T19:30:57Z",
+      "updatedAt": "2026-10-31T19:50:01Z",
+      "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
+      "baseRefName": "main",
+      "baseRefOid": "8c203c6edb4340a90518c31f9a4fbb7c70c0cbd0",
+      "headRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
+      "headRefName": "fix-151-152",
+      "headRefOid": "ac045454b565b65cb2a6b3938293a25ccadb4a00",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
