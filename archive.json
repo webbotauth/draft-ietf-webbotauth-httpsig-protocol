@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-01T04:52:36.303920+00:00",
+  "timestamp": "2026-11-05T05:36:27.973777+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2745,6 +2745,22 @@
       "body": "-01 \u00a75.5 says \"A verifier fetches that URL directly and interprets the response as a JWK Set\". The only example that follows it is the one in \u00a75.5 itself, `sig1=\"https://signature-agent.test/jwks.json\"`. The others still send a bare origin:\n\n- \u00a75.2.5: `Signature-Agent: sig=\"https://signer.example.com\"`\n- D.2: `agent=\"https://agent.alice.example\", browser=\"https://browser.example\"`\n- E.1.1 and E.2.1: `sig2=\"https://signature-agent.test\"`\n- E.1.2 and E.2.2 (legacy form): `\"https://signature-agent.test\"`\n\nRead with \u00a75.5, each of these points the verifier at the origin itself, while E.2.3 serves the key set at `/.well-known/http-message-signatures-directory` on the same host. A verifier written to -01 cannot get from E.2.1 to the keys in E.2.3, and a verifier that still appends the well-known path passes the vectors. As written, the vectors do not tell the two apart.\n\nSuggested fix: use `https://signature-agent.test/.well-known/http-message-signatures-directory` in the examples, and the same shape for the other hosts. The E vectors cover `signature-agent`, so their signatures change with it.\n\nA related question. The text does not say what a verifier should do with a bare origin it still receives. \u00a75.5 implies fetching the origin's root. Deployed signers and published documentation still use that form: Google's Web Bot Auth page shows `g=\"https://agent.bot.goog\"`, Cloudflare's shows `\"https://signature-agent.test\"`. \u00a75.2.1 has a sentence for the legacy string form. One sentence either way for the bare origin would stop verifiers from each picking their own reading.\n",
       "createdAt": "2026-10-31T07:28:25Z",
       "updatedAt": "2026-10-31T07:28:25Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 154,
+      "id": "I_kwDOOXJyWM8AAAABcP3-3A",
+      "title": "\u00a75.5: fetching the member value as sent while the identifier drops the query lets any spelling replace the cached key set",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/154",
+      "state": "OPEN",
+      "author": "AVAVERIFY",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "-01 \u00a75.5 says \"The URL the verifier resolved is the identifier, with any query discarded. The verifier fetches the member value as sent, so the query is dropped from the identifier and not from the request.\"\n\nSo a verifier that caches per identifier stores the result of fetching `https://a.example/jwks?x=1` under `https://a.example/jwks`, the same entry every other spelling of that identifier reads. A client chooses the query. It needs no key for that identifier, because key material is fetched before the signature can be checked (\u00a75.4). If the directory host answers some query differently, two things follow:\n\n- A 200 with a different key set is evidence under \u00a76.10. Under \u00a74.4 the newer pair wins \"including when it omits a key that older resolution included\". The operator's real keys stop verifying everywhere that cache is shared, until the next refresh, and the client can repeat it.\n- An error is not evidence (\u00a76.10). With nothing cached, though, the identifier stays unresolved for the negative-cache period (C.5), and the client can repeat that too.\n\nWhile implementing -01 we closed this by fetching the identifier itself, so the query is never sent. That keeps \u00a75.5's stated aim, one identifier per key set, and adds no new identifiers. If the WG prefers to keep fetch-as-sent, a Security Considerations sentence would help: a response fetched under a spelling other than the identifier itself must not replace the cached key set for that identifier.\n\nHappy to send a PR for either wording.",
+      "createdAt": "2026-11-03T20:33:32Z",
+      "updatedAt": "2026-11-03T20:33:32Z",
       "closedAt": null,
       "comments": []
     }
