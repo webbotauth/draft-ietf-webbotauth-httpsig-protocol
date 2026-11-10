@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-05T05:36:27.973777+00:00",
+  "timestamp": "2026-11-10T06:21:48.318323+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -1812,7 +1812,7 @@
       "labels": [],
       "body": "\u00a75.2 (\"Binding keys to the directory authority\") RECOMMENDS that a directory server include one per-key HTTP Message Signature over `@authority;req` + `content-digest`, and says *\"clients SHOULD ignore keys from a directory response that do not have a corresponding valid signature.\"* PR #98's intent extends this to `jwks_uri` responses (\"we still strongly suggest that jwks_uri response is signed to bind keys to a domain\").\n\nThis is applied **uniformly**, but the binding goal is already met by the transport in one common case:\n\n- **Same-origin serving.** When the directory / `jwks_uri` is served from the **same origin** as the `@authority` the keys speak for, TLS to that origin already binds the keys to that authority. A verifier that fetched `https://signer.example/...` over TLS and got these keys has the same authority binding the per-key `@authority;req` signature would provide. The signature is redundant with TLS here.\n\n- **Delegated / cross-origin serving.** When keys are served from a **different** origin than the authority (delegation, third-party key hosting, a shared key service), TLS to the key host does **not** bind the keys to the authority. The per-key `@authority;req` signature is then the essential \u2014 and only \u2014 binding. This is exactly where \u00a75.2 earns its keep.\n\n## Proposal\n\nScope \u00a75.2's signing recommendation (and the \"ignore unsigned keys\" guidance) to the **delegated / cross-origin** case, or at minimum add a note that **a directory/`jwks_uri` served same-origin with the authority over TLS satisfies the authority-binding goal without per-key signatures.** Otherwise a conformant verifier following the blanket SHOULD would ignore unsigned keys that are in fact securely bound to the authority by TLS.\n\n## Why it matters\n\nDeployments that reuse a **same-origin identity document as the JWKS** \u2014 e.g., an agent/commerce profile served at the operator's own well-known URL, pointed to by `Signature-Agent; type=jwks_uri` \u2014 would otherwise be forced into dynamic per-key response signing: private keys at the serving layer (or a precompute pipeline), caches keyed on `@authority`, and re-signing on `expires`. That is real operational burden with **no security gain over TLS** in the same-origin case. Distinguishing the two cases keeps the simple same-origin path viable while preserving the signature requirement where it is actually load-bearing (delegation/cross-origin).\n",
       "createdAt": "2026-06-19T16:47:06Z",
-      "updatedAt": "2026-08-24T21:40:40Z",
+      "updatedAt": "2026-11-09T03:07:23Z",
       "closedAt": null,
       "comments": [
         {
@@ -1828,6 +1828,13 @@
           "body": "> We can clarify section 5.2 to distinguish transport integrity from key-authority binding, but I would not scope the signing recommendation only to cross-origin/delegated discovery. Would that fit better?\n\nPicking this up late because the same scoping question came back on the list this week, and I think the distinction you proposed is the answer to it.\n\nIn -02 this text is Appendix B, \"Validating the domain binding\", and it opens with \"It applies to the directory type in Section 5.5.\"\n\nThat's right for the binding. 4.5 rests on the well-known path being reserved, so an arbitrary jwks_uri path can't carry it. But B.1 is a possession proof over @authority and content-digest, and possession isn't type-specific. Two properties sharing one appendix, and the scope sentence reads as covering both.\n\nPractical effect: a jwks_uri or cimd operator can't produce a conformant proof, since 5.5.3 wants \"a valid directory response signature as described in Appendix B\" and the tag is pinned to `http-message-signatures-directory`. Which cuts against #98, \"We still strongly suggest that jwks_uri response is signed to bound keys to a domain.\"\n\nTwo implementers said on the list this week they only do B.1 on directory responses, because that's what the text licenses.\n\nSuggested edit to the scope paragraph:\n\n```\nThe domain binding described in Section 4.5 applies to the directory type\nin Section 5.5. The possession proof in Appendix B.1 is not specific to\nthat type: it covers @authority and content-digest, and applies to any\nresponse serving key material. A server publishing under jwks_uri or cimd\nMAY include it, and a verifier MAY consume it under Section 5.5.3.\n```\n\nThe tag is the loose end. Simplest is a sentence saying the value names the mechanism rather than the resource, so it's unchanged across types. A second value would be cleaner and more churn. Happy to write either as a PR.",
           "createdAt": "2026-08-24T21:40:40Z",
           "updatedAt": "2026-08-24T21:40:40Z"
+        },
+        {
+          "author": "MachinesOfDesire",
+          "authorAssociation": "NONE",
+          "body": "I agree with @thibmeu on the direct fetch. When the verifier fetches the directory itself, `@authority;req` is the host it asked, so a signature over it binds the keys to that host.\n\nBuilding on @shivdeep1's point that B.1 is a possession proof, the case I don't think it covers is \u00a75.5.3, redistributed key material. There the verifier never made the request, so `@authority` is whatever the signer wrote, and B.1 checks the proof against the key in the same body. A list operator, or anyone who can get an entry into a list, can generate a key, sign a body with `@authority` set to another operator's host, and the proof validates. So the proof adds nothing beyond trusting the list, though \u00a75.5.3 reads as if it does. It also covers the host and not the path.\n\nThis also stretches the removal window Kaveh raised on the list. Whoever holds a stolen key can sign a fresh proof, and as I read \u00a74.4 a newer copy in a list outranks the operator's removal.\n\nAppendix B already says \"Authority over the domain comes from the TLS connection to the directory. Nothing below adds to that.\" I'd carry that into \u00a75.5.3. Either the text says attribution from redistributed material means trusting the redistributor to have fetched the directory over TLS, or \u00a75.5.3 drops that attribution. I backed #131 on the list in August, which would have widened this proof's use, and I missed this then.",
+          "createdAt": "2026-11-09T03:07:23Z",
+          "updatedAt": "2026-11-09T03:07:23Z"
         }
       ]
     },
@@ -2312,7 +2319,7 @@
       "labels": [],
       "body": "Taking the example of `shopify.com/.well-known/http-message-signatures-directory` which 301 to `www.shopify.com` (has been noted by Nick Mathews on [mailarchive](https://mailarchive.ietf.org/arch/msg/web-bot-auth/RRHGvYAou5chgIwDRSDo6rRyEu0/)).\n\nHaving a clear mention in section 4 seems important: what about cross-origin, inclusion of non-https URI, etc.",
       "createdAt": "2026-08-11T15:14:00Z",
-      "updatedAt": "2026-08-19T08:28:43Z",
+      "updatedAt": "2026-11-09T03:03:16Z",
       "closedAt": null,
       "comments": [
         {
@@ -2328,6 +2335,13 @@
           "body": "Reopenning based on discussion from the mailing list https://mailarchive.ietf.org/arch/msg/web-bot-auth/sZUxltGc7LuFYApy_hTkLjnqVm4/\n\nInstead of prohibitting redirection, allowing it but making it clear that the delagation does not confer trust, and the identifier remains what the client provided via signature-agent\n\nWe should add constraints, such as using TLS on every hop and recommending limiting the depth of redirection in deployment considerations",
           "createdAt": "2026-08-19T08:28:43Z",
           "updatedAt": "2026-08-19T08:28:43Z"
+        },
+        {
+          "author": "MachinesOfDesire",
+          "authorAssociation": "NONE",
+          "body": "The current draft (-01) has both: Section 5.5 says verifiers \"MUST NOT automatically follow HTTP redirects\" (from #125), while Section 6.7 still lists redirect chains with \"Verifiers SHOULD limit redirect depth\", a line that predates #125. Since this issue was reopened to allow redirects with constraints, which way is it going? If the prohibition stays, the 6.7 entry could become a pointer to 5.5. If redirects are allowed, 5.5 needs the constraints from the Aug 19 comment, and the temporary redirect for migration in #134 would fit there.",
+          "createdAt": "2026-11-09T03:03:15Z",
+          "updatedAt": "2026-11-09T03:03:15Z"
         }
       ]
     },
@@ -2760,9 +2774,17 @@
       "labels": [],
       "body": "-01 \u00a75.5 says \"The URL the verifier resolved is the identifier, with any query discarded. The verifier fetches the member value as sent, so the query is dropped from the identifier and not from the request.\"\n\nSo a verifier that caches per identifier stores the result of fetching `https://a.example/jwks?x=1` under `https://a.example/jwks`, the same entry every other spelling of that identifier reads. A client chooses the query. It needs no key for that identifier, because key material is fetched before the signature can be checked (\u00a75.4). If the directory host answers some query differently, two things follow:\n\n- A 200 with a different key set is evidence under \u00a76.10. Under \u00a74.4 the newer pair wins \"including when it omits a key that older resolution included\". The operator's real keys stop verifying everywhere that cache is shared, until the next refresh, and the client can repeat it.\n- An error is not evidence (\u00a76.10). With nothing cached, though, the identifier stays unresolved for the negative-cache period (C.5), and the client can repeat that too.\n\nWhile implementing -01 we closed this by fetching the identifier itself, so the query is never sent. That keeps \u00a75.5's stated aim, one identifier per key set, and adds no new identifiers. If the WG prefers to keep fetch-as-sent, a Security Considerations sentence would help: a response fetched under a spelling other than the identifier itself must not replace the cached key set for that identifier.\n\nHappy to send a PR for either wording.",
       "createdAt": "2026-11-03T20:33:32Z",
-      "updatedAt": "2026-11-03T20:33:32Z",
+      "updatedAt": "2026-11-09T02:40:45Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "MachinesOfDesire",
+          "authorAssociation": "NONE",
+          "body": "+1 to fetching the identifier itself rather than the URL as sent.\n\nThis matters beyond request signing, because extensions anchor to the same key set. For example, in draft-ashcroft-approval-record (https://github.com/MachinesOfDesire/draft-ashcroft-approval-record), the verifier uses the operator's key set to tie an approval to the operator's enrolled approver. If a client-chosen query can replace or negatively cache that key set, the verifier loses that attribution along with signature verification.\n\nFetching the identifier keeps every consumer of the cache on the same keys. A Security Considerations sentence alone would leave each extension to work around the problem on its own.",
+          "createdAt": "2026-11-09T02:40:45Z",
+          "updatedAt": "2026-11-09T02:40:45Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -7521,7 +7543,7 @@
       ],
       "body": "Fixes #151: \u00a75.5.1 example `kid` is now the RFC 7638 thumbprint of its key.\r\nFixes #152: examples point `Signature-Agent` at the directory URL. Appendix E signatures regenerated with the RFC 9421 test keys and verified.\r\n\r\n@sandormajor",
       "createdAt": "2026-10-31T19:30:57Z",
-      "updatedAt": "2026-10-31T19:50:01Z",
+      "updatedAt": "2026-11-09T03:10:10Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "8c203c6edb4340a90518c31f9a4fbb7c70c0cbd0",
@@ -7532,7 +7554,15 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "MachinesOfDesire",
+          "authorAssociation": "NONE",
+          "body": "Related, while the examples are being fixed: both signatures in the D.2 remote-browser example have `created` but no `expires`, which \u00a75.2 requires of agents. Could that go in this PR or a follow-up?",
+          "createdAt": "2026-11-09T03:10:10Z",
+          "updatedAt": "2026-11-09T03:10:10Z"
+        }
+      ],
       "reviews": []
     }
   ]
