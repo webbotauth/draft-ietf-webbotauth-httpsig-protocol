@@ -858,6 +858,15 @@ identifiable information from directory requests.
 
 This section contains considerations for IANA.
 
+## HTTP Field Name Registration {#iana-http-field}
+
+IANA is requested to register the following entry in the "Hypertext Transfer
+Protocol (HTTP) Field Name Registry" ({{Section 16.3 of HTTP}}):
+
+| Field Name | Status | Structured Type | Reference | Comments |
+| :--- | :--- | :--- | :--- | :--- |
+| `Signature-Agent` | permanent | Dictionary | {{signature-agent}} of this document | None |
+
 ## Well-Known 'http-message-signatures-directory' URI {#wkuri-reg}
 
 This document updates the "Well-Known URIs" Registry {{WellKnownURIs}} with the
