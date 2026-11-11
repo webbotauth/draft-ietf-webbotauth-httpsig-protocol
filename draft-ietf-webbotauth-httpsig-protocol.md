@@ -100,7 +100,7 @@ defines what that identifier is and what validation it establishes.
 There is an increase in agent traffic on the Internet. Many agents
 choose to identify their traffic today via IP Address lists and/or unique
 User-Agents. This is often done to demonstrate trust and safety claims, support
-allowlisting/denylisting the traffic in a granular manor, and enable sites to
+allowlisting/denylisting the traffic in a granular manner, and enable sites to
 monitor and rate limit per agent operator. However, these mechanisms have drawbacks:
 
  1. User-Agent, when used alone, can be spoofed meaning anyone may attempt to
