@@ -1533,6 +1533,8 @@ draft-meunier-web-bot-auth-architecture-03
 
 * In [JSON format](https://github.com/cloudflare/web-bot-auth/blob/main/packages/web-bot-auth/test/test_data/web_bot_auth_architecture_v2.json)
 
+* [Negative vectors](https://github.com/ParallaxGrain/webbotauth-negative-vectors) in JSON (CC0): requests that must not verify, one fault per request, using the Ed25519 key from {{Appendix B.1.4 of HTTP-MESSAGE-SIGNATURES}}, with the outcome from {{verifier-outcomes}} that a verifier should reach
+
 
 # Acknowledgments
 {:numbered="false"}
