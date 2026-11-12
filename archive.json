@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-10T06:21:48.318323+00:00",
+  "timestamp": "2026-11-12T06:10:55.256574+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2686,9 +2686,17 @@
       ],
       "body": "@sandormajor raised in https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/141#discussion_r4343331471 that certain client policy may be to always sign, and stop when the origin does not need it anymore. They'd like a signal from origins that this would not disrupt traffic.\n\nOne way could be to infer it: stop signing and see what happen. Another approach is for origin to signal this.\n\nThis would be a new mechanism. It may even be its own draft.",
       "createdAt": "2026-10-22T18:26:51Z",
-      "updatedAt": "2026-10-22T18:26:51Z",
+      "updatedAt": "2026-11-11T02:23:05Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "sandormajor",
+          "authorAssociation": "NONE",
+          "body": "there's a typo in the title, should be \"origin to signal to client\"",
+          "createdAt": "2026-11-11T02:23:05Z",
+          "updatedAt": "2026-11-11T02:23:05Z"
+        }
+      ]
     },
     {
       "number": 149,
@@ -2735,15 +2743,15 @@
       "id": "I_kwDOOXJyWM8AAAABbXCmvQ",
       "title": "\u00a75.5.1 example directory: `kid` is not the RFC 7638 thumbprint of its key",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/151",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "femi-alla",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "In `-01` \u00a75.5.1 (and `main` at 8c203c6, line 620) the example directory entry is\n\n    \"kid\": \"NFcWBst6DXG-N35nHdzMrioWntdzNZghQSkjHNMMSjw\",\n    \"x\":   \"JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs\"\n\nThe RFC 7638 thumbprint of that key (SHA-256 over `{\"crv\":\"Ed25519\",\"kty\":\"OKP\",\"x\":\"JrQLj5P_\u2026\"}`) is\n\n    poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U\n\nwhich is the `kid` the same key carries in Appendix E (the signed directory response and every `keyid` in the examples). \u00a75.5 says a `kid`, if present, must be the thumbprint, so the \u00a75.5.1 example contradicts the rule it illustrates.\n\nSuggested fix: replace the \u00a75.5.1 `kid` with `poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U`.",
       "createdAt": "2026-10-31T04:21:19Z",
-      "updatedAt": "2026-10-31T04:21:19Z",
-      "closedAt": null,
+      "updatedAt": "2026-11-10T09:05:49Z",
+      "closedAt": "2026-11-10T09:05:49Z",
       "comments": []
     },
     {
@@ -2751,15 +2759,15 @@
       "id": "I_kwDOOXJyWM8AAAABbYUcLA",
       "title": "Most examples still send a bare origin, which \u00a75.5 now fetches as the JWK Set",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/152",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ParallaxGrain",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "-01 \u00a75.5 says \"A verifier fetches that URL directly and interprets the response as a JWK Set\". The only example that follows it is the one in \u00a75.5 itself, `sig1=\"https://signature-agent.test/jwks.json\"`. The others still send a bare origin:\n\n- \u00a75.2.5: `Signature-Agent: sig=\"https://signer.example.com\"`\n- D.2: `agent=\"https://agent.alice.example\", browser=\"https://browser.example\"`\n- E.1.1 and E.2.1: `sig2=\"https://signature-agent.test\"`\n- E.1.2 and E.2.2 (legacy form): `\"https://signature-agent.test\"`\n\nRead with \u00a75.5, each of these points the verifier at the origin itself, while E.2.3 serves the key set at `/.well-known/http-message-signatures-directory` on the same host. A verifier written to -01 cannot get from E.2.1 to the keys in E.2.3, and a verifier that still appends the well-known path passes the vectors. As written, the vectors do not tell the two apart.\n\nSuggested fix: use `https://signature-agent.test/.well-known/http-message-signatures-directory` in the examples, and the same shape for the other hosts. The E vectors cover `signature-agent`, so their signatures change with it.\n\nA related question. The text does not say what a verifier should do with a bare origin it still receives. \u00a75.5 implies fetching the origin's root. Deployed signers and published documentation still use that form: Google's Web Bot Auth page shows `g=\"https://agent.bot.goog\"`, Cloudflare's shows `\"https://signature-agent.test\"`. \u00a75.2.1 has a sentence for the legacy string form. One sentence either way for the bare origin would stop verifiers from each picking their own reading.\n",
       "createdAt": "2026-10-31T07:28:25Z",
-      "updatedAt": "2026-10-31T07:28:25Z",
-      "closedAt": null,
+      "updatedAt": "2026-11-10T09:05:49Z",
+      "closedAt": "2026-11-10T09:05:49Z",
       "comments": []
     },
     {
@@ -2785,6 +2793,22 @@
           "updatedAt": "2026-11-09T02:40:45Z"
         }
       ]
+    },
+    {
+      "number": 155,
+      "id": "I_kwDOOXJyWM8AAAABeMEmkg",
+      "title": "HTTP Field Name registration for Signature-Agent",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/155",
+      "state": "OPEN",
+      "author": "sandormajor",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The IANA section is missing the `Signature-Agent` header",
+      "createdAt": "2026-11-11T03:18:16Z",
+      "updatedAt": "2026-11-11T03:18:16Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -7532,7 +7556,7 @@
       "id": "PR_kwDOOXJyWM8AAAABMAiKqw",
       "title": "Use directory URLs in examples and fix example kid",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/153",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thibmeu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -7543,17 +7567,19 @@
       ],
       "body": "Fixes #151: \u00a75.5.1 example `kid` is now the RFC 7638 thumbprint of its key.\r\nFixes #152: examples point `Signature-Agent` at the directory URL. Appendix E signatures regenerated with the RFC 9421 test keys and verified.\r\n\r\n@sandormajor",
       "createdAt": "2026-10-31T19:30:57Z",
-      "updatedAt": "2026-11-09T03:10:10Z",
+      "updatedAt": "2026-11-10T09:06:18Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "8c203c6edb4340a90518c31f9a4fbb7c70c0cbd0",
       "headRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "fix-151-152",
       "headRefOid": "ac045454b565b65cb2a6b3938293a25ccadb4a00",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-11-10T09:05:48Z",
+      "mergedAt": "2026-11-10T09:05:47Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "3f89ab3b4edd5473ebd9ccc40be47b82932c7c70"
+      },
       "comments": [
         {
           "author": "MachinesOfDesire",
@@ -7561,8 +7587,67 @@
           "body": "Related, while the examples are being fixed: both signatures in the D.2 remote-browser example have `created` but no `expires`, which \u00a75.2 requires of agents. Could that go in this PR or a follow-up?",
           "createdAt": "2026-11-09T03:10:10Z",
           "updatedAt": "2026-11-09T03:10:10Z"
+        },
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@MachinesOfDesire will put a follow up",
+          "createdAt": "2026-11-10T09:06:18Z",
+          "updatedAt": "2026-11-10T09:06:18Z"
         }
       ],
+      "reviews": []
+    },
+    {
+      "number": 156,
+      "id": "PR_kwDOOXJyWM8AAAABOScgCw",
+      "title": "Add HTTP Field Name Registration",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/156",
+      "state": "OPEN",
+      "author": "sandormajor",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Addressing https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/155",
+      "createdAt": "2026-11-11T04:29:38Z",
+      "updatedAt": "2026-11-11T04:29:38Z",
+      "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
+      "baseRefName": "main",
+      "baseRefOid": "3f89ab3b4edd5473ebd9ccc40be47b82932c7c70",
+      "headRepository": "sandormajor/draft-ietf-webbotauth-httpsig-protocol",
+      "headRefName": "patch-1",
+      "headRefOid": "1184aad71c6b0cbb07eb6a13763d2f05ab1c5056",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 157,
+      "id": "PR_kwDOOXJyWM8AAAABOZ8mnQ",
+      "title": "Fix typo (manor -> manner)",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/157",
+      "state": "OPEN",
+      "author": "thomshutt-fastly",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Slightly less grand sounding but more correct",
+      "createdAt": "2026-11-11T14:58:23Z",
+      "updatedAt": "2026-11-11T14:58:24Z",
+      "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
+      "baseRefName": "main",
+      "baseRefOid": "3f89ab3b4edd5473ebd9ccc40be47b82932c7c70",
+      "headRepository": "thomshutt-fastly/draft-ietf-webbotauth-httpsig-protocol",
+      "headRefName": "main",
+      "headRefOid": "256a67f62c332d07c69b66ea80627db2f26c52db",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
       "reviews": []
     }
   ]
