@@ -5,8 +5,8 @@
 Web Bot Auth                                                  T. Meunier
 Internet-Draft                                                Cloudflare
 Intended status: Standards Track                                S. Major
-Expires: 14 May 2027                                              Google
-                                                        10 November 2026
+Expires: 19 May 2027                                              Google
+                                                        15 November 2026
 
 
              HTTP Message Signatures for automated traffic
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 14 May 2027.
+   This Internet-Draft will expire on 19 May 2027.
 
 Copyright Notice
 
@@ -118,9 +118,10 @@ Table of Contents
      7.1.  Identification and Correlation
      7.2.  Directory Content and Access Patterns
    8.  IANA Considerations
-     8.1.  Well-Known 'http-message-signatures-directory' URI
-     8.2.  Media Types
-       8.2.1.  "application/http-message-signatures-directory+json"
+     8.1.  HTTP Field Name Registration
+     8.2.  Well-Known 'http-message-signatures-directory' URI
+     8.3.  Media Types
+       8.3.1.  "application/http-message-signatures-directory+json"
                Media Type
    9.  References
      9.1.  Normative References
@@ -363,7 +364,7 @@ Table of Contents
 4.5.  Binding a Key to a Web Origin
 
    A well-known URL is a special case of the above.  When a Signature-
-   Agent value is the well-known URI registered in Section 8.1, the
+   Agent value is the well-known URI registered in Section 8.2, the
    identifier is still the URL, but that URL now names a domain rather
    than an arbitrary path on one.  [WELLKNOWN-URI] reserves the path, so
    the domain operator stands behind the key set.
@@ -717,7 +718,7 @@ Signature-Agent: sig="https://signer.example.com/.well-known/http-message-signat
    The key is selected using the keyid parameter in Signature-Input.
 
    Note: when a JWK set is served at the well-known URI registered in
-   Section 8.1, JWK MAY carry a kid.  In this case, it MUST be set to
+   Section 8.2, JWK MAY carry a kid.  In this case, it MUST be set to
    the thumbprint defined in Section 5.2, so a verifier selects a key by
    matching keyid against kid.  Deriving kid from the key material keeps
    it globally unique and lets a verifier check the directory's own
@@ -738,7 +739,7 @@ Signature-Agent: sig="https://signer.example.com/.well-known/http-message-signat
    [HTTP-MESSAGE-SIGNATURES-IANA].
 
    The directory MUST be served over HTTPS.  A directory served at the
-   well-known URI registered in Section 8.1 MUST be served with media
+   well-known URI registered in Section 8.2 MUST be served with media
    type application/http-message-signatures-directory+json.
 
    A verifier SHOULD validate the directory format and reject malformed
@@ -1016,7 +1017,25 @@ Signature-Agent: sig="https://signer.example.com/.well-known/http-message-signat
 
    This section contains considerations for IANA.
 
-8.1.  Well-Known 'http-message-signatures-directory' URI
+8.1.  HTTP Field Name Registration
+
+   IANA is requested to register the following entry in the "Hypertext
+   Transfer Protocol (HTTP) Field Name Registry" (Section 16.3 of
+   [HTTP]):
+
+    +=================+===========+============+===========+==========+
+    | Field Name      | Status    | Structured | Reference | Comments |
+    |                 |           | Type       |           |          |
+    +=================+===========+============+===========+==========+
+    | Signature-Agent | permanent | Dictionary | Section   | None     |
+    |                 |           |            | 5.2.1 of  |          |
+    |                 |           |            | this      |          |
+    |                 |           |            | document  |          |
+    +-----------------+-----------+------------+-----------+----------+
+
+                                  Table 1
+
+8.2.  Well-Known 'http-message-signatures-directory' URI
 
    This document updates the "Well-Known URIs" Registry [WellKnownURIs]
    with the following values.
@@ -1030,9 +1049,9 @@ Signature-Agent: sig="https://signer.example.com/.well-known/http-message-signat
    | directory     |            |           |           |             |
    +---------------+------------+-----------+-----------+-------------+
 
-       Table 1: 'http-message-signatures-directory' Well-Known URI
+       Table 2: 'http-message-signatures-directory' Well-Known URI
 
-8.2.  Media Types
+8.3.  Media Types
 
    The following entries should be added to the IANA "media types"
    registry:
@@ -1042,7 +1061,7 @@ Signature-Agent: sig="https://signer.example.com/.well-known/http-message-signat
    The templates for these entries are listed below and the reference
    should be this RFC.
 
-8.2.1.  "application/http-message-signatures-directory+json" Media Type
+8.3.1.  "application/http-message-signatures-directory+json" Media Type
 
    Type name:  application
    Subtype name:  http-message-signatures-directory
@@ -1221,7 +1240,7 @@ Appendix A.  Use Cases and What They Need
    | information                 | alongside the identifier  |        |
    +-----------------------------+---------------------------+--------+
 
-             Table 2: Use cases and the identifier they need
+             Table 3: Use cases and the identifier they need
 
    The last two are the pattern from Section 4.5.  Both consume
    something held against a name rather than against the key: a
@@ -1234,7 +1253,7 @@ Appendix B.  Validating the Domain Binding
    This appendix describes what a verifier checks when it wants the
    domain a key is published under, rather than the URL on its own.  It
    applies when the Signature-Agent value is the well-known URI
-   registered in Section 8.1.  Verification, rotation, and continuity do
+   registered in Section 8.2.  Verification, rotation, and continuity do
    not depend on any of it, and a verifier that only needs the URL as an
    identifier can skip the whole appendix.
 
