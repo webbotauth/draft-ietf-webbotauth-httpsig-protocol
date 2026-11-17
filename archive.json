@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-15T05:19:33.819079+00:00",
+  "timestamp": "2026-11-17T06:58:27.566153+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -7603,52 +7603,84 @@
       "id": "PR_kwDOOXJyWM8AAAABOScgCw",
       "title": "Add HTTP Field Name Registration",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/156",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "sandormajor",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Addressing https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/155",
       "createdAt": "2026-11-11T04:29:38Z",
-      "updatedAt": "2026-11-11T04:29:38Z",
+      "updatedAt": "2026-11-15T15:10:11Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "3f89ab3b4edd5473ebd9ccc40be47b82932c7c70",
       "headRepository": "sandormajor/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "patch-1",
       "headRefOid": "1184aad71c6b0cbb07eb6a13763d2f05ab1c5056",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-11-15T15:10:11Z",
+      "mergedAt": "2026-11-15T15:10:11Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "3cfef74427edc0d6e45600e1420b7725544f99d5"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABYFkAPA",
+          "commit": {
+            "abbreviatedOid": "1184aad"
+          },
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "TIL there is an IANA registry with HTTP fields https://www.iana.org/assignments/http-fields",
+          "createdAt": "2026-11-15T15:08:54Z",
+          "updatedAt": "2026-11-15T15:08:54Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 157,
       "id": "PR_kwDOOXJyWM8AAAABOZ8mnQ",
       "title": "Fix typo (manor -> manner)",
       "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/157",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thomshutt-fastly",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Slightly less grand sounding but more correct",
       "createdAt": "2026-11-11T14:58:23Z",
-      "updatedAt": "2026-11-11T14:58:24Z",
+      "updatedAt": "2026-11-15T15:10:43Z",
       "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
       "baseRefName": "main",
       "baseRefOid": "3f89ab3b4edd5473ebd9ccc40be47b82932c7c70",
       "headRepository": "thomshutt-fastly/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "main",
       "headRefOid": "256a67f62c332d07c69b66ea80627db2f26c52db",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-11-15T15:10:43Z",
+      "mergedAt": "2026-11-15T15:10:43Z",
+      "mergedBy": "thibmeu",
+      "mergeCommit": {
+        "oid": "441a465dc1842354b56a23de95972419111a4bab"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXJyWM8AAAABYFkJZw",
+          "commit": {
+            "abbreviatedOid": "256a67f"
+          },
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "thanks for spotting!",
+          "createdAt": "2026-11-15T15:09:31Z",
+          "updatedAt": "2026-11-15T15:09:31Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 158,
