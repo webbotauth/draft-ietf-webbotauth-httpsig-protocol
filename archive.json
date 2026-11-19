@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-17T06:58:27.566153+00:00",
+  "timestamp": "2026-11-19T06:23:07.381963+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2563,7 +2563,7 @@
       ],
       "body": "Origins can reject a signed request without explaining why verification failed. This makes deployment failures harder to diagnose.\n\nConsider using [RFC 9457](https://www.rfc-editor.org/info/rfc9457/) to report signature verification errors. Define which failures to expose and whether shared problem types are needed. This needs to avoid the disclosure of sensitive state.\n\nRaised in [the implementation-report thread](https://mailarchive.ietf.org/arch/msg/web-bot-auth/fDM_deEVKXJLjgbM83YKAgFfEfc/).",
       "createdAt": "2026-10-12T23:12:38Z",
-      "updatedAt": "2026-10-31T18:16:08Z",
+      "updatedAt": "2026-11-18T01:15:33Z",
       "closedAt": null,
       "comments": [
         {
@@ -2579,6 +2579,20 @@
           "body": "There is a new individual draft that could be relevant here https://datatracker.ietf.org/doc/html/draft-nottingham-problem-header\n\nIt provides an HTTP header that encodes Problem details. There are a few limitations, but they seems quite reasonable. I have not yet sat to map the errors we envision into that format, but that seems doable",
           "createdAt": "2026-10-31T18:16:08Z",
           "updatedAt": "2026-10-31T18:16:08Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "NONE",
+          "body": "WBA @ IETF 127: @martinthomson suggests having a special path that the server always rejects if WBA validation fails and 200 otherwise",
+          "createdAt": "2026-11-18T01:11:02Z",
+          "updatedAt": "2026-11-18T01:11:02Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "NONE",
+          "body": "Correction: @martinthomson meant it would be helpful to have *a* debugging tool, not requiring all websites to offer it",
+          "createdAt": "2026-11-18T01:15:32Z",
+          "updatedAt": "2026-11-18T01:15:32Z"
         }
       ]
     },
@@ -2628,7 +2642,7 @@
       ],
       "body": "Raised on the [mailing](https://mailarchive.ietf.org/arch/msg/web-bot-auth/UgZUzO6wFX1WSDQbIJ3cwHePr8M/)\n\nThe current draft uses `tag=\"web-bot-auth\"` within HTTP Message Signature for client and servers to identify the usage of web bot auth usage.\n\nThere are no namespace for `tag`. This means that there might be another draft which would rely on web-bot-auth tag down the line, without a clear way to manage conflict resolution.\n\n@mnot proposes four path forward\n1) Carve out a standards-managed space inside \"tag\" (messy)\n2) Create an extension attribute that is reserved for standards use (\"registered-tag\"?)\n3) Define a different header field set with identical syntax and processing (e.g., WBA-Signature)\n4) Create an extension attribute that is \"webbotauth\"",
       "createdAt": "2026-10-13T20:32:54Z",
-      "updatedAt": "2026-10-27T10:01:31Z",
+      "updatedAt": "2026-11-18T00:53:46Z",
       "closedAt": null,
       "comments": [
         {
@@ -2640,7 +2654,7 @@
         },
         {
           "author": "sandormajor",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I agree, Thibault!\n* 2 is like 1 but registered, then why not just create a registry for 1?\n* 3 is basically forking the `Signature` for a specific usecase, I don't like that\n* 4 seems ok at first but HTTP sig might end up with a lot of usecase-specifying parameters like this, so why not just use `tag` then? The [HTTP Signature Metadata Parameters registry](https://www.iana.org/assignments/http-message-signature) is currently a short list of protocol-specific params, it would be odd to me if it would be flooded with booleans signifying what the given signature is used for. It would also open the question of what happens if multiple such params are present?\n\nAlso, per RFC 9421, `tag` is \"An application-specific tag for the signature as a String value. This value is used by applications to help identify signatures relevant for specific applications or protocols.\" \u2013 this seems to be what we're doing here.\nSo I'm leaning towards 0 (status quo), or 1 (creating a registry for tag)\n\nLet's ask the owners of RFC 9421 to see if they have preferences or other alternatives.",
           "createdAt": "2026-10-21T23:56:28Z",
           "updatedAt": "2026-10-21T23:57:20Z"
@@ -2651,6 +2665,13 @@
           "body": "I believe that'd be both a question for the IANA registry expert for [HTTP Signature Message Parameters](https://www.iana.org/assignments/http-message-signature#signature-metadata-parameters), the HTTP directorate, and the WG.\n\nSo a good discussion point overall, for the mailing, and our next meeting.",
           "createdAt": "2026-10-27T10:01:31Z",
           "updatedAt": "2026-10-27T10:01:31Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "NONE",
+          "body": "WBA @ IETF 127: consensus in the room was to use a boolean parameter",
+          "createdAt": "2026-11-18T00:53:46Z",
+          "updatedAt": "2026-11-18T00:53:46Z"
         }
       ]
     },
@@ -2668,9 +2689,17 @@
       ],
       "body": "Per [RFC 9421 Section 5.1](https://datatracker.ietf.org/doc/html/rfc9421#section-5.1-4)\n> The list of component identifiers indicates the exact set of component identifiers to be included in the requested signature, including all applicable component parameters\n\nAs I understand, and that the [mailing list discussion](https://mailarchive.ietf.org/arch/msg/web-bot-auth/UgZUzO6wFX1WSDQbIJ3cwHePr8M/) between @martinthomson and @mnot suggests, this means that a client receiving an `Accept-Signature` MUST cover the exact set of components.\n\nWith web bot auth, we might want to have the ability to propose a minimal set of components. This way, an origin could send\n\n```\nMinimal-Accept-Signature: (\"@authority\" \"signature-agent\");tag=\"web-bot-auth\"\n```\n\nAnd the client would understand that they have to cover AT LEAST this set of parameters.\n\nThe other alternative if we go with a `tag` registry suggested in #144 is to NOT offer the server a way to request more parameters, let that be privately negotiated and at the client's initiative\n\nRelates to #144",
       "createdAt": "2026-10-13T20:46:26Z",
-      "updatedAt": "2026-10-13T23:34:03Z",
+      "updatedAt": "2026-11-18T01:05:53Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "NONE",
+          "body": "WBA @ IETF 127: sense in the room is to keep this simple and decide in the draft the minimum set of what should be signed - don't let the server require more - but allow the client to sign more if they want. Interest in having a way for the server to indicate that it supports WBA, either a binary header or something else (robots.txt?)",
+          "createdAt": "2026-11-18T01:05:53Z",
+          "updatedAt": "2026-11-18T01:05:53Z"
+        }
+      ]
     },
     {
       "number": 148,
