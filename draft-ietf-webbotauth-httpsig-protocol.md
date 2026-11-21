@@ -1532,6 +1532,10 @@ draft-meunier-webbotauth-httpsig-protocol-00
 
 * [Cloudflare Workers](https://github.com/cloudflare/web-bot-auth) (TypeScript)
 
+draft-ietf-webbotauth-httpsig-protocol-01
+
+* [Storeware](https://storeware.ai/docs/agents/standing) (TypeScript, Cloudflare Workers)
+
 draft-meunier-web-bot-auth-architecture-03
 
 * [Caddy plugin](https://github.com/cloudflare/web-bot-auth) (Go)
