@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-19T06:23:07.381963+00:00",
+  "timestamp": "2026-11-22T05:35:16.883354+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2563,7 +2563,7 @@
       ],
       "body": "Origins can reject a signed request without explaining why verification failed. This makes deployment failures harder to diagnose.\n\nConsider using [RFC 9457](https://www.rfc-editor.org/info/rfc9457/) to report signature verification errors. Define which failures to expose and whether shared problem types are needed. This needs to avoid the disclosure of sensitive state.\n\nRaised in [the implementation-report thread](https://mailarchive.ietf.org/arch/msg/web-bot-auth/fDM_deEVKXJLjgbM83YKAgFfEfc/).",
       "createdAt": "2026-10-12T23:12:38Z",
-      "updatedAt": "2026-11-18T01:15:33Z",
+      "updatedAt": "2026-11-21T11:05:47Z",
       "closedAt": null,
       "comments": [
         {
@@ -2593,6 +2593,20 @@
           "body": "Correction: @martinthomson meant it would be helpful to have *a* debugging tool, not requiring all websites to offer it",
           "createdAt": "2026-11-18T01:15:32Z",
           "updatedAt": "2026-11-18T01:15:32Z"
+        },
+        {
+          "author": "ParallaxGrain",
+          "authorAssociation": "NONE",
+          "body": "On the debugging tool from the IETF 127 notes above: I run one, in case it is useful.\n\nThree ways to use it:\n\n- a form at https://packet.guru/agents where a signed request can be pasted;\n- `GET https://fp.packet.guru/api/v1/connection`, which checks the request it receives;\n- the same check as an MCP tool at `https://fp.packet.guru/api/v1/mcp`, for agents.\n\nAll three say whether the Web Bot Auth signature verified and, if not, name the reason and what to change. The endpoint answers 200 either way, so the result is in the body and not in the status code.\n\nTwo things from it may help with this issue:\n\n- The verifier names 37 failure reasons, listed at https://packet.guru/agents/reference. In 19 the signer broke a rule; in 18 the verifier could not decide.\n- The negative test vectors from #11 (https://github.com/ParallaxGrain/webbotauth-negative-vectors) are 16 requests that must be rejected, each with the expected outcome and reason. Two other implementations have run the set and fixed defects it found (AVA-PAY/ava-pay#27, ParallaxGrain/webbotauth-negative-vectors#1), so another verifier or a second debugging tool can be checked the same way.",
+          "createdAt": "2026-11-19T11:44:53Z",
+          "updatedAt": "2026-11-19T11:44:53Z"
+        },
+        {
+          "author": "frostyhand",
+          "authorAssociation": "NONE",
+          "body": "I've posted an individual draft with one concrete proposal for this: https://datatracker.ietf.org/doc/draft-suresh-webbotauth-verification-outcome/\n\nIn short:\n- one RFC 9457 problem type, `web-bot-auth`, with `outcome`, `reason`, `label` and `identifier` members, header-compatible so it can also go in the `Problem-Details` field from draft-nottingham-problem-header;\n- a registry of deliberately coarse reason codes (eight for `invalid`, three for `unverified`), keeping `directory-unavailable` and `key-not-found` apart as the Discovery Failure section requires;\n- disclosure levels chosen by the verifier (nothing, outcome only, or outcome plus reason), to address the concern above about revealing verifier state;\n- an optional `/.well-known/web-bot-auth-check` resource for the debugging aid suggested at IETF 127, so no website has to offer it.\n\nAnnounced on the list as well. Happy to fold it into the protocol draft instead if the group prefers that.\n",
+          "createdAt": "2026-11-21T11:05:47Z",
+          "updatedAt": "2026-11-21T11:05:47Z"
         }
       ]
     },
@@ -2811,7 +2825,7 @@
       "labels": [],
       "body": "-01 \u00a75.5 says \"The URL the verifier resolved is the identifier, with any query discarded. The verifier fetches the member value as sent, so the query is dropped from the identifier and not from the request.\"\n\nSo a verifier that caches per identifier stores the result of fetching `https://a.example/jwks?x=1` under `https://a.example/jwks`, the same entry every other spelling of that identifier reads. A client chooses the query. It needs no key for that identifier, because key material is fetched before the signature can be checked (\u00a75.4). If the directory host answers some query differently, two things follow:\n\n- A 200 with a different key set is evidence under \u00a76.10. Under \u00a74.4 the newer pair wins \"including when it omits a key that older resolution included\". The operator's real keys stop verifying everywhere that cache is shared, until the next refresh, and the client can repeat it.\n- An error is not evidence (\u00a76.10). With nothing cached, though, the identifier stays unresolved for the negative-cache period (C.5), and the client can repeat that too.\n\nWhile implementing -01 we closed this by fetching the identifier itself, so the query is never sent. That keeps \u00a75.5's stated aim, one identifier per key set, and adds no new identifiers. If the WG prefers to keep fetch-as-sent, a Security Considerations sentence would help: a response fetched under a spelling other than the identifier itself must not replace the cached key set for that identifier.\n\nHappy to send a PR for either wording.",
       "createdAt": "2026-11-03T20:33:32Z",
-      "updatedAt": "2026-11-09T02:40:45Z",
+      "updatedAt": "2026-11-21T09:22:22Z",
       "closedAt": null,
       "comments": [
         {
@@ -2820,6 +2834,13 @@
           "body": "+1 to fetching the identifier itself rather than the URL as sent.\n\nThis matters beyond request signing, because extensions anchor to the same key set. For example, in draft-ashcroft-approval-record (https://github.com/MachinesOfDesire/draft-ashcroft-approval-record), the verifier uses the operator's key set to tie an approval to the operator's enrolled approver. If a client-chosen query can replace or negatively cache that key set, the verifier loses that attribution along with signature verification.\n\nFetching the identifier keeps every consumer of the cache on the same keys. A Security Considerations sentence alone would leave each extension to work around the problem on its own.",
           "createdAt": "2026-11-09T02:40:45Z",
           "updatedAt": "2026-11-09T02:40:45Z"
+        },
+        {
+          "author": "frostyhand",
+          "authorAssociation": "NONE",
+          "body": "+1 to fetching the identifier itself. Data point from implementing draft 01 in Storeware: we fetched the member value as sent and cached per spelling, which avoids the cross-spelling eviction described here. But attribution still crossed spellings, because a key set fetched at `?x=1` earned standing for the identifier without the query. Fetching the identifier closes both, and that is what we now ship.\n",
+          "createdAt": "2026-11-21T09:22:22Z",
+          "updatedAt": "2026-11-21T09:22:22Z"
         }
       ]
     },
@@ -2836,6 +2857,24 @@
       "body": "The IANA section is missing the `Signature-Agent` header",
       "createdAt": "2026-11-11T03:18:16Z",
       "updatedAt": "2026-11-11T03:18:16Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 159,
+      "id": "I_kwDOOXJyWM8AAAABhI-3zg",
+      "title": "Better discovery of test servers",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/159",
+      "state": "OPEN",
+      "author": "thibmeu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "enhancement"
+      ],
+      "body": "It was mentioned during IETF 127 meeting that it would be valuable to have test endpoints for webbotauth.\n\nWhile having some text on this, it could be valuable to agree on a path/query parameter to test specific version of the draft. This is not meant to be normative, so we would have to ensure we don't enshrine anything here.\n\nThis is complementary to #142 ",
+      "createdAt": "2026-11-20T20:19:47Z",
+      "updatedAt": "2026-11-20T20:19:47Z",
       "closedAt": null,
       "comments": []
     }
@@ -7730,6 +7769,32 @@
       "headRepository": "ParallaxGrain/draft-ietf-webbotauth-httpsig-protocol",
       "headRefName": "negative-vectors-link",
       "headRefOid": "9f474e0e0157e347162dd66f79f7f0a4bf46d0e0",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 160,
+      "id": "PR_kwDOOXJyWM8AAAABQ2_wgA",
+      "title": "Add Storeware to the server implementations",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/160",
+      "state": "OPEN",
+      "author": "frostyhand",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Storeware is a commerce platform whose API verifies Web Bot Auth signatures from AI agents that shop on behalf of people. Its verifier follows draft 01: `Signature-Agent` values are fetched as JWK Sets (section 5.5), `created` and `expires` are required with a 24-hour maximum window, `keyid` is the RFC 7638 thumbprint, and `Signature-Agent` must be covered. It accepts `ed25519` and `rsa-pss-sha512`.\n\nChecked against the draft 01 vectors E.1.2 and E.2.2, which verify end to end, and against requests signed fresh by the `web-bot-auth` npm package (0.2.0) in production, with both key types (most recently on 21 Nov 2026). The 100-year vectors produce a matching signature base and a valid signature, and are refused only because of the window policy.\n\nThe code is not public, so the link goes to the public documentation of the verified endpoint. Happy to change the link or wording to whatever suits the appendix.\n",
+      "createdAt": "2026-11-21T09:22:05Z",
+      "updatedAt": "2026-11-21T15:36:08Z",
+      "baseRepository": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
+      "baseRefName": "main",
+      "baseRefOid": "441a465dc1842354b56a23de95972419111a4bab",
+      "headRepository": "frostyhand/draft-ietf-webbotauth-httpsig-protocol",
+      "headRefName": "add-storeware-server",
+      "headRefOid": "fe90c9d25dd3bb86033659c41bbf7daddbe435a1",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
