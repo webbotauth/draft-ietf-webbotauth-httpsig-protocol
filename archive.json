@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-22T05:35:16.883354+00:00",
+  "timestamp": "2026-11-26T07:15:58.600665+00:00",
   "repo": "webbotauth/draft-ietf-webbotauth-httpsig-protocol",
   "labels": [
     {
@@ -2729,15 +2729,22 @@
       ],
       "body": "@sandormajor raised in https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/pull/141#discussion_r4343331471 that certain client policy may be to always sign, and stop when the origin does not need it anymore. They'd like a signal from origins that this would not disrupt traffic.\n\nOne way could be to infer it: stop signing and see what happen. Another approach is for origin to signal this.\n\nThis would be a new mechanism. It may even be its own draft.",
       "createdAt": "2026-10-22T18:26:51Z",
-      "updatedAt": "2026-11-11T02:23:05Z",
+      "updatedAt": "2026-11-25T03:34:09Z",
       "closedAt": null,
       "comments": [
         {
           "author": "sandormajor",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "there's a typo in the title, should be \"origin to signal to client\"",
           "createdAt": "2026-11-11T02:23:05Z",
           "updatedAt": "2026-11-11T02:23:05Z"
+        },
+        {
+          "author": "ynachiket",
+          "authorAssociation": "NONE",
+          "body": "From the operator side, \"no signature expected\" is rarely site-wide. A storefront typically wants a signature on account, cart, checkout and limited-release or high-demand endpoints, and is indifferent on the public catalog and product pages. A single global signal would either tell agents to stop signing where it matters, or never get used.\n\nIf the mechanism ends up scoped, the smallest version I can see is a path scope on the existing signature-request signal, along the lines of the RFC 7616 `domain` idea @thibmeu raised in #141. For example, a response could carry `Accept-Signature` plus a list of path prefixes where signing is expected. Anything outside the list means a client that signs by policy, as @sandormajor described, may stop. That seems to fit the \"send it on the response\" model in the Requesting a Message Signature section. It would also leave open whether the scope is only a hint or something an agent can rely on.\n\nDoes a path-scoped signal like this match what you had in mind, or is the intent a separate, origin-wide discovery signal like the one discussed at IETF 127 in #145?\n",
+          "createdAt": "2026-11-25T03:34:09Z",
+          "updatedAt": "2026-11-25T03:34:09Z"
         }
       ]
     },
@@ -2875,6 +2882,62 @@
       "body": "It was mentioned during IETF 127 meeting that it would be valuable to have test endpoints for webbotauth.\n\nWhile having some text on this, it could be valuable to agree on a path/query parameter to test specific version of the draft. This is not meant to be normative, so we would have to ensure we don't enshrine anything here.\n\nThis is complementary to #142 ",
       "createdAt": "2026-11-20T20:19:47Z",
       "updatedAt": "2026-11-20T20:19:47Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 161,
+      "id": "I_kwDOOXJyWM8AAAABiXl1pg",
+      "title": "Add ML-DSA-44 for JWK thumbprint generation",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/161",
+      "state": "OPEN",
+      "author": "thibmeu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "ml-dsa-* have been [allocated by IANA](https://www.iana.org/assignments/http-message-signature/http-message-signature.xhtml) as valid HTTP Message Signature algorithm (with a definition).\n\nWe should point to the document that defines how a JWK is computed for these signature schemes.",
+      "createdAt": "2026-11-25T09:31:56Z",
+      "updatedAt": "2026-11-25T09:40:47Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "thibmeu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This is actually defined in [Section 6 of RFC 9964](https://www.rfc-editor.org/rfc/rfc9964.html#name-akp-thumbprints)",
+          "createdAt": "2026-11-25T09:40:47Z",
+          "updatedAt": "2026-11-25T09:40:47Z"
+        }
+      ]
+    },
+    {
+      "number": 162,
+      "id": "I_kwDOOXJyWM8AAAABiXp40g",
+      "title": "Add ML-DSA-44 test vectors",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/162",
+      "state": "OPEN",
+      "author": "thibmeu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We shohuld evaluate ML_DSA-44 as a possible algorithm for WBA writh HTTP Sig. While generating vectors seems rather straightforward, there are some considerations\n\n1. What are the signing/verification performance, purely locally (not network considerations)\n2. How does the increased signature size interact with existing implementaiton/middleware. I suspect that will work on most implementations, but we need to at least have some brief look into this\n3. How does having two keys in a directory, and two signatures play together. Some implementations might break where they should not. In addition to example with solely ml-dsa-44, we should have one with both ed25519 and ml-dsa-44",
+      "createdAt": "2026-11-25T09:35:52Z",
+      "updatedAt": "2026-11-25T09:35:52Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 163,
+      "id": "I_kwDOOXJyWM8AAAABijNOwg",
+      "title": "describe consolidation, concentration and exclusion risks of direct signatures",
+      "url": "https://github.com/webbotauth/draft-ietf-webbotauth-httpsig-protocol/issues/163",
+      "state": "OPEN",
+      "author": "npdoty",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "As [briefly discussed at IETF 127](https://datatracker.ietf.org/meeting/127/materials/minutes-127-webbotauth-00#consolidation-and-centralization-risks), using HTTP signatures to uniquely identify bots creates risks of centralization and consolidation -- websites might block all bots except those large enough to be previously known or to have previously-negotiated business arrangements, which would exclude new entrants, researchers and those running bots for public interest purposes. On the Web, we saw large-scale copying of User-Agent strings in order to allow new entrants that wanted to evoke particular behaviors and avoid receiving a degraded experience, but signatures would prohibit this kind of ecosystem behavior.\n\n[RFC 9518](https://datatracker.ietf.org/doc/rfc9518/) would be one useful source; while that's an informational RFC from independent submission, it's a useful documentation of terminology and potential problems. From that taxonomy, I think: _power imbalance_, _limits on innovation_, _constraints on competition_, _reduced availability_ and _self-reinforcement_ would all apply.",
+      "createdAt": "2026-11-25T20:56:02Z",
+      "updatedAt": "2026-11-25T20:56:02Z",
       "closedAt": null,
       "comments": []
     }
